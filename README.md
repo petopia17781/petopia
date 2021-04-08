@@ -1,6 +1,5 @@
 # petopia
-
-A new Flutter project.
+Currently working on the home page. - Yihua Cai
 
 ## Getting Started
 

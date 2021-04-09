@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:petopia/repository/DataRepository.dart';
+
+import 'models/Pet.dart';
 
 class MyPetPage extends StatefulWidget {
 
@@ -20,6 +23,7 @@ class MyPetPage extends StatefulWidget {
 }
 
 class _MyPetPageState extends State<MyPetPage> {
+  final DataRepository repository = DataRepository();
 
   int _counter = 0;
 
@@ -30,8 +34,9 @@ class _MyPetPageState extends State<MyPetPage> {
       // so that the display can reflect the updated values. If we changed
       // _counter without calling setState(), then the build method would not be
       // called again, and so nothing would appear to happen.
-      _counter++;
+      _counter += 2;
     });
+    repository.addPet(Pet(_counter.toString(), type:"cat"));
   }
 
   @override

@@ -1,17 +1,16 @@
-import 'dart:async';
 import 'dart:collection';
-
+import 'dart:io';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flare_flutter/flare_actor.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:image_picker_modern/image_picker_modern.dart';
+import 'package:petopia/createposts.dart';
 import 'package:petopia/mypet.dart';
 import 'package:petopia/nearby.dart';
 import 'package:petopia/profile.dart';
 import 'package:flutter/material.dart';
 import 'package:petopia/store.dart';
-import 'package:flutter_cache_manager/flutter_cache_manager.dart';
-import 'package:transparent_image/transparent_image.dart';
+
 
 
 class MyHomePage extends StatefulWidget {
@@ -38,6 +37,7 @@ class _MyHomePageState extends State<MyHomePage> {
   int _selectedIndex = 0;
   static const TextStyle optionStyle =
       TextStyle(fontSize: 30, fontWeight: FontWeight.bold);
+  bool createPost = false;
   static List<Widget> _widgetOptions = <Widget>[
     MyHomeWidget(),
     StorePage(title: "Store"),
@@ -46,42 +46,12 @@ class _MyHomePageState extends State<MyHomePage> {
     ProfilePage(title: "My Profile"),
   ];
 
-  void choiceAction(MyChoice choice) {
-    if (choice == MyChoice.AddTodo) {
-      print('AddTodo');
-    } else if (choice == MyChoice.AddWeight) {
-      print('AddWeight');
-    } else {
-      print('this is not an existing choice');
-    }
-  }
-
-  Widget _offsetPopup() => PopupMenuButton<MyChoice>(
-      onSelected: choiceAction,
-      itemBuilder: (context) => [
-            PopupMenuItem(
-              value: MyChoice.AddTodo,
-              child: FlatButton.icon(
-                  onPressed: null,
-                  icon: new Icon(Icons.add),
-                  label: Text("Add Todo List")),
-            ),
-            PopupMenuItem(
-              value: MyChoice.AddWeight,
-              child: FlatButton.icon(
-                  onPressed: null,
-                  icon: new Icon(Icons.add),
-                  label: Text("Add Weight")),
-            ),
-          ],
-      icon: new Icon(Icons.add));
 
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
     final colorScheme = Theme.of(context).colorScheme;
     return Scaffold(
-
       appBar: AppBar(
         leading: Icon(Icons.menu),
         title: Center(child: Text("Petopia")),
@@ -151,7 +121,7 @@ class _MyHomeWidgetState extends State<MyHomeWidget> {
   String imageUrl = "https://images.indianexpress.com/2019/04/cat_759getty.jpg";
   Map likes = new HashMap();
   bool liked = false;
-
+  File file;
   GetPostHeader({String ownerId}) {
     if (ownerId == null) {
       return Text("owner error");
@@ -295,6 +265,9 @@ class _MyHomeWidgetState extends State<MyHomeWidget> {
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
     final colorScheme = Theme.of(context).colorScheme;
+    if (file != null) {
+      return CreatePostPage(file: file);
+    } else
     return SafeArea(
       child: Scaffold(
         backgroundColor: colorScheme.secondary,
@@ -316,13 +289,62 @@ class _MyHomeWidgetState extends State<MyHomeWidget> {
           backgroundColor: colorScheme.primary,
           foregroundColor: Colors.black,
           onPressed: () {
-            // Respond to button press
+            setState(() {
+              _selectImage(context);
+            });
           },
           child: Icon(Icons.add),
         ),
       ),
     );
+  }
 
 
+  _selectImage(BuildContext parentContext) async {
+    return showDialog<Null>(
+      context: parentContext,
+      barrierDismissible: false, // user must tap button!
+
+      builder: (BuildContext context) {
+        return SimpleDialog(
+          title: const Text('Create a Post'),
+          children: <Widget>[
+            SimpleDialogOption(
+                child: const Text('Take a photo'),
+                onPressed: () async {
+                  Navigator.pop(context);
+                  var imageFile = await ImagePicker.pickImage(
+                      source: ImageSource.camera,
+                      maxWidth: 1920,
+                      maxHeight: 1200);
+                  // await imagePicker.getImage(source: ImageSource.camera, maxWidth: 1920, maxHeight: 1200, imageQuality: 80);
+                  setState(() {
+                    file = imageFile.absolute;
+                  });
+                }),
+            SimpleDialogOption(
+                child: const Text('Choose from Gallery'),
+                onPressed: () async {
+                  Navigator.of(context).pop();
+                  var imageFile = await ImagePicker.pickImage(
+                      source: ImageSource.gallery,
+                      maxWidth: 1920,
+                      maxHeight: 1200);
+                  // var imageFile =
+                  // await imagePicker.getImage(source: ImageSource.gallery, maxWidth: 1920, maxHeight: 1200, imageQuality: 80);
+                  setState(() {
+                    file = imageFile.absolute;
+                  });
+                }),
+            SimpleDialogOption(
+              child: const Text("Cancel"),
+              onPressed: () {
+                Navigator.pop(context);
+              },
+            )
+          ],
+        );
+      },
+    );
   }
 }

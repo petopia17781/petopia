@@ -18,7 +18,7 @@ flutter pub get
 
 First, open the default Xcode workspace by running open ios/Runner.xcworkspace in a terminal window from `/petopia` directory.
 
-Then move the file [GoogleService-Info.plist](https://drive.google.com/file/d/1dXFtLKJEfryJ5_nHigqkEsYfUbwHGPbc/view?usp=sharing) ` into the `Runner/Runner` directory.  
+Then move the file [GoogleService-Info.plist](https://drive.google.com/file/d/1dXFtLKJEfryJ5_nHigqkEsYfUbwHGPbc/view?usp=sharing) into the `Runner/Runner` directory.  
 
 3. Run Flutter app in `/petopia` directory.
 

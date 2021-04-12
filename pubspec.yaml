@@ -48,6 +48,9 @@ dependencies:
   image_picker_modern: ^0.4.12+3
   firebase_storage: ^3.1.6
 
+  # Add the dependency for Google Maps
+  google_maps_flutter: ^2.0.3
+
 dev_dependencies:
   flutter_test:
     sdk: flutter

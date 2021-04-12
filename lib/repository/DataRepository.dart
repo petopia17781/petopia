@@ -16,4 +16,8 @@ class DataRepository {
   updatePet(Pet pet) async {
     await collection.document(pet.reference.documentID).updateData(pet.toJson());
   }
+
+  Future<DocumentReference> getPetDocumentRef(String petName) async {
+    await collection.where("name", isEqualTo: petName).getDocuments();
+  }
 }

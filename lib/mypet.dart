@@ -1,5 +1,7 @@
+// import 'package:charts_flutter/flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:petopia/repository/DataRepository.dart';
+import 'package:petopia/home.dart';
 
 import 'models/Pet.dart';
 
@@ -47,45 +49,75 @@ class _MyPetPageState extends State<MyPetPage> {
     // The Flutter framework has been optimized to make rerunning build methods
     // fast, so that you can just rebuild anything that needs updating rather
     // than having to individually change instances of widgets.
-    return Scaffold(
-      body: Center(
-        // Center is a layout widget. It takes a single child and positions it
-        // in the middle of the parent.
-        child: Column(
-          // Column is also a layout widget. It takes a list of children and
-          // arranges them vertically. By default, it sizes itself to fit its
-          // children horizontally, and tries to be as tall as its parent.
-          //
-          // Invoke "debug painting" (press "p" in the console, choose the
-          // "Toggle Debug Paint" action from the Flutter Inspector in Android
-          // Studio, or the "Toggle Debug Paint" command in Visual Studio Code)
-          // to see the wireframe for each widget.
-          //
-          // Column has various properties to control how it sizes itself and
-          // how it positions its children. Here we use mainAxisAlignment to
-          // center the children vertically; the main axis here is the vertical
-          // axis because Columns are vertical (the cross axis would be
-          // horizontal).
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            Text(
-              'You have pushed the button this many times:',
-            ),
-            Text(
-              '$_counter',
-              style: Theme
-                  .of(context)
-                  .textTheme
-                  .headline4,
-            ),
+    return DefaultTabController(
+      length: 2,
+      child: Scaffold(
+        appBar: AppBar(
+          title: Text('Pet Records      '),
+          automaticallyImplyLeading: false,
+          bottom: TabBar(
+            indicatorColor: Colors.white,
+            tabs: [
+              Tab(text: 'Lucas'),
+              Tab(text: 'Kitty'),
+            ],
+          ),
+        ),
+        body: TabBarView(
+          children: [
+            Center(child: buildTabBarView('Lucas')),
+            Center(child: buildTabBarView('Kitty')),
           ],
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: Icon(Icons.add),
-      ), // This trailing comma makes auto-formatting nicer for build methods.
+    );
+  }
+
+  Widget buildTabBarView(String tab) {
+    return ListView(
+      children: [
+        buildCard('04/13/2021'),
+        ListTile(
+          title: Text('Weight'),
+          leading: Icon(Icons.tour),
+          trailing: Text('9.49lbs'),
+        ),
+        ListTile(
+          title: Text('Calories'),
+          leading: Icon(Icons.leaderboard),
+          trailing: Text('97 CAL'),
+        ),
+        ListTile(
+          title: Text('Next Deworming'),
+          leading: Icon(Icons.pan_tool),
+          trailing: Text('03/20/2021'),
+        ),
+        ListTile(
+          title: Text('Next Vaccination'),
+          leading: Icon(Icons.verified_user),
+          trailing: Text('11/24/2021'),
+        ),
+      ],
+    );
+  }
+
+
+
+  Widget buildCard(String tab) {
+    return Card(
+      clipBehavior: Clip.antiAlias,
+      child: Column(
+        children: [
+          ListTile(
+            // leading: Text("04/13/2021"),
+            title: Center(child: Text(tab, style: TextStyle(fontSize: 25))),
+          ),
+          ButtonBar(
+            alignment: MainAxisAlignment.start,
+          ),
+          Image.network('https://www.ctvnews.ca/polopoly_fs/1.5098407.1599687805!/httpImage/image.jpg_gen/derivatives/landscape_1020/image.jpg'),
+        ],
+      ),
     );
   }
 

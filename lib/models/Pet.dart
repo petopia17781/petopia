@@ -1,6 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:petopia/models/Vaccination.dart';
+import 'package:petopia/models/Record.dart';
 
 class Pet {
   // 1
@@ -8,11 +8,11 @@ class Pet {
   String notes;
   String type;
   // 2
-  List<Vaccination> vaccinations = List<Vaccination>();
+  List<Record> records;
   // 3
   DocumentReference reference;
   // 4
-  Pet(this.name, {this.notes, this.type, this.reference, this.vaccinations});
+  Pet(this.name, {this.notes, this.type, this.reference, this.records});
   // 5
   factory Pet.fromSnapshot(DocumentSnapshot snapshot) {
     Pet newPet = Pet.fromJson(snapshot.data);
@@ -33,35 +33,35 @@ Pet _PetFromJson(Map<String, dynamic> json) {
       json['name'] as String,
       notes: json['notes'] as String,
       type: json['type'] as String,
-      vaccinations: _convertVaccinations(json['vaccinations'] as List)
+      records: _convertRecords(json['records'] as List)
   );
 }
 // 2
-List<Vaccination> _convertVaccinations(List vaccinationMap) {
-  if (vaccinationMap == null) {
+List<Record> _convertRecords(List recordMap) {
+  if (recordMap == null) {
     return null;
   }
-  List<Vaccination> vaccinations =  List<Vaccination>();
-  vaccinationMap.forEach((value) {
-    vaccinations.add(Vaccination.fromJson(value));
+  List<Record> records =  List<Record>();
+  recordMap.forEach((value) {
+    recordMap.add(Record.fromJson(value));
   });
-  return vaccinations;
+  return records;
 }
 // 3
 Map<String, dynamic> _PetToJson(Pet instance) => <String, dynamic> {
   'name': instance.name,
   'notes': instance.notes,
   'type': instance.type,
-  'vaccinations': _VaccinationList(instance.vaccinations),
+  'records': _RecordList(instance.records),
 };
 // 4
-List<Map<String, dynamic>> _VaccinationList(List<Vaccination> vaccinations) {
-  if (vaccinations == null) {
+List<Map<String, dynamic>> _RecordList(List<Record> records) {
+  if (records == null) {
     return null;
   }
-  List<Map<String, dynamic>> vaccinationMap =List<Map<String, dynamic>>();
-  vaccinations.forEach((vaccination) {
-    vaccinationMap.add(vaccination.toJson());
+  List<Map<String, dynamic>> recordMap =List<Map<String, dynamic>>();
+  records.forEach((record) {
+    recordMap.add(record.toJson());
   });
-  return vaccinationMap;
+  return recordMap;
 }

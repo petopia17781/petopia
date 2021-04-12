@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'SizeConfig.dart';
 import 'home.dart';
 
 void main() {
@@ -9,10 +10,19 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Petopia',
-      theme: _buildShrineTheme(),
-      home: MyHomePage(title: 'Home Page'),
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        return OrientationBuilder(
+          builder: (context, orientation) {
+            SizeConfig().init(constraints, orientation);
+            return MaterialApp(
+              title: 'Petopia',
+              theme: _buildShrineTheme(),
+              home: MyHomePage(title: 'Home Page'),
+            );
+          },
+        );
+      },
     );
   }
 }

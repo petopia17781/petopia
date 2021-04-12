@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:petopia/SizeConfig.dart';
 
 class ProfilePage extends StatefulWidget {
 
@@ -21,21 +22,10 @@ class ProfilePage extends StatefulWidget {
 
 class _ProfilePageState extends State<ProfilePage> {
 
-  int _counter = 0;
-
-  void _incrementCounter() {
-    setState(() {
-      // This call to setState tells the Flutter framework that something has
-      // changed in this State, which causes it to rerun the build method below
-      // so that the display can reflect the updated values. If we changed
-      // _counter without calling setState(), then the build method would not be
-      // called again, and so nothing would appear to happen.
-      _counter++;
-    });
-  }
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
     // This method is rerun every time setState is called, for instance as done
     // by the _incrementCounter method above.
     //
@@ -43,44 +33,141 @@ class _ProfilePageState extends State<ProfilePage> {
     // fast, so that you can just rebuild anything that needs updating rather
     // than having to individually change instances of widgets.
     return Scaffold(
-      body: Center(
-        // Center is a layout widget. It takes a single child and positions it
-        // in the middle of the parent.
-        child: Column(
-          // Column is also a layout widget. It takes a list of children and
-          // arranges them vertically. By default, it sizes itself to fit its
-          // children horizontally, and tries to be as tall as its parent.
-          //
-          // Invoke "debug painting" (press "p" in the console, choose the
-          // "Toggle Debug Paint" action from the Flutter Inspector in Android
-          // Studio, or the "Toggle Debug Paint" command in Visual Studio Code)
-          // to see the wireframe for each widget.
-          //
-          // Column has various properties to control how it sizes itself and
-          // how it positions its children. Here we use mainAxisAlignment to
-          // center the children vertically; the main axis here is the vertical
-          // axis because Columns are vertical (the cross axis would be
-          // horizontal).
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            Text(
-              'You have pushed the button this many times:',
+      body: Stack(
+        children: <Widget>[
+          // header
+          Container(
+            color: shrinePink400,
+            height: 30 * SizeConfig.heightMultiplier,
+            child: Padding(
+              padding: EdgeInsets.only(left: 30.0, right: 30.0, top: 5 * SizeConfig.heightMultiplier),
+              child: Column(
+                children: <Widget>[
+                  Row(
+                    children: <Widget>[
+                      // Avatar
+                      Container(
+                        height: 11 * SizeConfig.heightMultiplier,
+                        width: 22 * SizeConfig.widthMultiplier,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          image: DecorationImage(
+                            fit: BoxFit.cover,
+                            image: NetworkImage("https://www.carnegiecouncil.org/people/andrew-carnegie/_res/id=Picture/thumbnail=1/width=170/quality=100")
+                          )
+                        ),
+                      ),
+                      SizedBox(width: 5 * SizeConfig.widthMultiplier,),
+                      // User name
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: <Widget>[
+                          Text("Andrew Carnegie", style: TextStyle(
+                            color: Colors.black38,
+                            fontSize: 3 * SizeConfig.textMultiplier,
+                            fontWeight: FontWeight.bold
+                          ),),
+                          SizedBox(height: 1 * SizeConfig.heightMultiplier,),
+                          Row(
+                            children: <Widget>[
+                              Row(
+                                children: <Widget>[
+                                  Image.asset("assets/instagram.png",
+                                  height: 3 * SizeConfig.heightMultiplier,
+                                  width: 3 * SizeConfig.widthMultiplier,),
+                                  SizedBox(width: 2 * SizeConfig.widthMultiplier,),
+                                  Text("Carnegie", style: TextStyle(
+                                      color: Colors.black26,
+                                      fontSize: 1.5 * SizeConfig.textMultiplier,
+                                  ),),
+                                ],
+                              )
+                            ],
+                          ),
+                        ],
+                      )
+                    ],
+                  ),
+                  SizedBox(height: 3 * SizeConfig.heightMultiplier,),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: <Widget>[
+                      Column(
+                        children: [
+                          Text("15.3K", style: TextStyle(
+                              color: Colors.black38,
+                              fontSize: 3 * SizeConfig.textMultiplier,
+                              fontWeight: FontWeight.bold
+                          ),),
+                          Text("Followers", style: TextStyle(
+                            color: Colors.black26,
+                            fontSize: 1.9 * SizeConfig.textMultiplier,
+                          ),),
+                        ],
+                      ),
+                      Column(
+                        children: [
+                          Text("314", style: TextStyle(
+                              color: Colors.black38,
+                              fontSize: 3 * SizeConfig.textMultiplier,
+                              fontWeight: FontWeight.bold
+                          ),),
+                          Text("Following", style: TextStyle(
+                            color: Colors.black26,
+                            fontSize: 1.9 * SizeConfig.textMultiplier,
+                          ),),
+                        ],
+                      ),
+                      Container(
+                        decoration: BoxDecoration(
+                          border: Border.all(color: Colors.black26),
+                          borderRadius: BorderRadius.circular(5.0),
+                        ),
+                        child: Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Text("EDIT PROFILE", style: TextStyle(
+                              color: Colors.black26,
+                              fontSize: 1.8 * SizeConfig.textMultiplier
+                          ),),
+                        ),
+                      )
+                    ],
+                  )
+                ],
+              ),
             ),
-            Text(
-              '$_counter',
-              style: Theme
-                  .of(context)
-                  .textTheme
-                  .headline4,
+          ),
+          // tab
+          Padding(
+            padding: EdgeInsets.only(top: 30 * SizeConfig.heightMultiplier),
+            child: DefaultTabController(
+              length: 3,
+              child: Scaffold(
+                appBar: AppBar(
+                  backgroundColor: shrinePink400,
+                  flexibleSpace: SafeArea(
+                    child: TabBar(
+                      indicatorColor: colorScheme.onSurface,
+                      tabs: [
+                        Tab(text: 'POSTS'),
+                        Tab(text: 'FAVORITES'),
+                        Tab(text: 'LIKED'),
+                      ],
+                    ),
+                  ),
+                ),
+                body: TabBarView(
+                  children: [
+                    Center(child: Text('POSTS')),
+                    Center(child: Text('FAVORITES')),
+                    Center(child: Text('LIKED')),
+                  ],
+                ),
+              ),
             ),
-          ],
-        ),
+          )
+        ],
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: Icon(Icons.add),
-      ), // This trailing comma makes auto-formatting nicer for build methods.
     );
   }
 

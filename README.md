@@ -52,6 +52,8 @@ Jiaqi Liu: Completed [data model design](https://docs.google.com/presentation/d/
 
 Yuting Liu: Working on Nearby page.
 
+Sijie Lin: Working on Store page & Profile page.
+
 ## Getting Started with Flutter
 
 This project is a starting point for a Flutter application.

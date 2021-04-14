@@ -5,6 +5,8 @@ import 'package:flutter/material.dart';
 import 'dart:io';
 import 'package:image_picker_modern/image_picker_modern.dart';
 import 'package:petopia/home.dart';
+import 'package:petopia/models/Post.dart';
+import 'package:petopia/repository/PostRepository.dart';
 import 'package:uuid/uuid.dart';
 
 class CreatePostPage extends StatefulWidget {
@@ -242,20 +244,17 @@ Future<String> uploadImage(var imageFile) async {
 void postToFireStore(
     {String mediaUrl, String location, String description}) async {
   print(mediaUrl.toString());
-  var reference = Firestore.instance.collection('posts');
-  reference.add({
-    //"username": "currentUserModel.username",
-    "username": "yihuatest",
-    // "location": location,
-    // "likes": {},
-    "mediaUrl": mediaUrl,
-    "description": description,
-    "ownerId": 123456,
-    // "ownerId": googleSignIn.currentUser.id,
-    "timestamp": DateTime.now(),
-  }).then((DocumentReference doc) {
+  PostRepository postRepository = PostRepository();
+  postRepository.addPost(new Post(
+      "post1",
+      username: "yihuatest",
+      mediaUrl: mediaUrl,
+      description: description,
+      userId: "user1",
+      timestamp: DateTime.now()
+  )).then((DocumentReference doc) {
     String docId = doc.documentID;
-    reference.document(docId).updateData({"postId": docId});
+    postRepository.collection.document(docId).updateData({"postId": docId});
   });
 }
 

@@ -4,11 +4,12 @@ import 'package:firebase_storage/firebase_storage.dart';
 class Post {
   String description;
   String mediaUrl;
-  int ownerId;
+  String userId;
   String postId;
   String username;
   DocumentReference reference;
-  Post(this.postId, {this.description, this.mediaUrl, this.ownerId, this.reference, this.username});
+  DateTime timestamp;
+  Post(this.postId, {this.description, this.mediaUrl, this.userId, this.reference, this.username, this.timestamp});
   factory Post.fromSnapshot(DocumentSnapshot snapshot) {
     Post newPost = Post.fromJson(snapshot.data);
     newPost.reference = snapshot.reference;
@@ -27,15 +28,17 @@ Post _PostFromJson(Map<String, dynamic> json)  {
   return Post(
       json['postId'] as String,
       description: json['description'] as String,
-      ownerId: json['ownerId'] as int,
+      userId: json['userId'] as String,
       mediaUrl: json['mediaUrl'] as String,
       username: json['username'] as String,
+      timestamp: json['date'] == null ? null : (json['date'] as Timestamp).toDate() as DateTime,
   );
 }
 Map<String, dynamic> _PostToJson(Post instance) => <String, dynamic> {
   'description': instance.description,
   'mediaUrl': instance.mediaUrl,
-  'ownerId': instance.ownerId,
+  'userId': instance.userId,
   'postId': instance.postId,
-  'username': instance.username
+  'username': instance.username,
+  'timestamp': instance.timestamp
 };

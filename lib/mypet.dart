@@ -1,6 +1,6 @@
 // import 'package:charts_flutter/flutter.dart';
 import 'package:flutter/material.dart';
-import 'package:petopia/repository/DataRepository.dart';
+import 'package:petopia/repository/PetRepository.dart';
 import 'package:petopia/home.dart';
 
 import 'models/Pet.dart';
@@ -25,7 +25,7 @@ class MyPetPage extends StatefulWidget {
 }
 
 class _MyPetPageState extends State<MyPetPage> {
-  final DataRepository repository = DataRepository();
+  final PetRepository repository = PetRepository();
 
   int _counter = 0;
 
@@ -38,24 +38,20 @@ class _MyPetPageState extends State<MyPetPage> {
       // called again, and so nothing would appear to happen.
       _counter += 2;
     });
-    repository.addPet(Pet(_counter.toString(), type:"cat"));
+    repository.addPet(Pet(_counter.toString(), "pet1", type:"cat"));
   }
 
   @override
   Widget build(BuildContext context) {
-    // This method is rerun every time setState is called, for instance as done
-    // by the _incrementCounter method above.
-    //
-    // The Flutter framework has been optimized to make rerunning build methods
-    // fast, so that you can just rebuild anything that needs updating rather
-    // than having to individually change instances of widgets.
+    final textTheme = Theme.of(context).textTheme;
+    final colorScheme = Theme.of(context).colorScheme;
     return DefaultTabController(
       length: 2,
       child: Scaffold(
         appBar: AppBar(
-          title: Text('Pet Records      '),
+          backgroundColor: colorScheme.primary,
           automaticallyImplyLeading: false,
-          bottom: TabBar(
+          title: TabBar(
             indicatorColor: Colors.white,
             tabs: [
               Tab(text: 'Lucas'),
@@ -68,6 +64,16 @@ class _MyPetPageState extends State<MyPetPage> {
             Center(child: buildTabBarView('Lucas')),
             Center(child: buildTabBarView('Kitty')),
           ],
+        ),
+        floatingActionButton: FloatingActionButton(
+          backgroundColor: colorScheme.primary,
+          foregroundColor: Colors.black,
+          onPressed: () {
+            setState(() {
+              // _selectImage(context);
+            });
+          },
+          child: Icon(Icons.add),
         ),
       ),
     );

@@ -2,12 +2,15 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:geocoder/model.dart';
 import 'dart:io';
 import 'package:image_picker_modern/image_picker_modern.dart';
 import 'package:petopia/home.dart';
 import 'package:petopia/models/Post.dart';
 import 'package:petopia/repository/PostRepository.dart';
 import 'package:uuid/uuid.dart';
+
+import 'location.dart';
 
 class CreatePostPage extends StatefulWidget {
   CreatePostPage({Key key, this.title, this.file}) : super(key: key);
@@ -22,12 +25,11 @@ class CreatePostPage extends StatefulWidget {
 class _CreatePostPageState extends State<CreatePostPage> {
   File file;
 
-
   Map<String, double> currentLocation = Map();
   TextEditingController descriptionController = TextEditingController();
   TextEditingController locationController = TextEditingController();
   ImagePicker imagePicker = ImagePicker();
-
+  Address address;
   bool uploading = false;
 
   _CreatePostPageState(File file) {
@@ -40,16 +42,17 @@ class _CreatePostPageState extends State<CreatePostPage> {
     currentLocation['latitude'] = 0.0;
     currentLocation['longitude'] = 0.0;
     // initPlatformState(); //method to call location
+    initPlatformState(); //method to call location
     super.initState();
   }
 
-  // //method to get Location and save into variables
-  // initPlatformState() async {
-  //   Address first = await getUserLocation();
-  //   setState(() {
-  //     address = first;
-  //   });
-  // }
+  //method to get Location and save into variables
+  initPlatformState() async {
+    Address first = await getUserLocation();
+    setState(() {
+      address = first;
+    });
+  }
 
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
@@ -88,6 +91,23 @@ class _CreatePostPageState extends State<CreatePostPage> {
                   loading: uploading,
                 ),
                 Divider(), //scroll view where we will show location to users
+                (address == null)
+                    ? Container()
+                    : SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  padding: EdgeInsets.only(right: 5.0, left: 5.0),
+                  child: Row(
+                    children: <Widget>[
+                      buildLocationButton(address.featureName),
+                      buildLocationButton(address.subLocality),
+                      buildLocationButton(address.locality),
+                      buildLocationButton(address.subAdminArea),
+                      buildLocationButton(address.adminArea),
+                      buildLocationButton(address.countryName),
+                    ],
+                  ),
+                ),
+                (address == null) ? Container() : Divider(),
               ],
             ));
   }
@@ -211,22 +231,22 @@ class PostForm extends StatelessWidget {
             ),
           )
         ],
-      )
-    ]);
-    //     ListTile(
-    //       leading: Icon(Icons.pin_drop),
-    //       title: Container(
-    //         width: 250.0,
-    //         child: TextField(
-    //           controller: locationController,
-    //           decoration: InputDecoration(
-    //               hintText: "Where was this photo taken?",
-    //               border: InputBorder.none),
-    //         ),
-    //       ),
-    //     )
-    //   ],
-    // );
+      ),
+      Divider(),
+        ListTile(
+          leading: Icon(Icons.pin_drop),
+          title: Container(
+            width: 250.0,
+            child: TextField(
+              controller: locationController,
+              decoration: InputDecoration(
+                  hintText: "Where was this photo taken?",
+                  border: InputBorder.none),
+            ),
+          ),
+        )
+      ],
+    );
   }
 }
 
@@ -251,7 +271,8 @@ void postToFireStore(
       mediaUrl: mediaUrl,
       description: description,
       userId: "user1",
-      timestamp: DateTime.now()
+      timestamp: DateTime.now(),
+      location: location,
   )).then((DocumentReference doc) {
     String docId = doc.documentID;
     postRepository.collection.document(docId).updateData({"postId": docId});

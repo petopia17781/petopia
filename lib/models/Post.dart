@@ -9,7 +9,8 @@ class Post {
   String username;
   DocumentReference reference;
   DateTime timestamp;
-  Post(this.postId, {this.description, this.mediaUrl, this.userId, this.reference, this.username, this.timestamp});
+  String location;
+  Post(this.postId, {this.description, this.mediaUrl, this.userId, this.reference, this.username, this.timestamp, this.location});
   factory Post.fromSnapshot(DocumentSnapshot snapshot) {
     Post newPost = Post.fromJson(snapshot.data);
     newPost.reference = snapshot.reference;
@@ -31,7 +32,8 @@ Post _PostFromJson(Map<String, dynamic> json)  {
       userId: json['userId'] as String,
       mediaUrl: json['mediaUrl'] as String,
       username: json['username'] as String,
-      timestamp: json['date'] == null ? null : (json['date'] as Timestamp).toDate() as DateTime,
+      location: json['location'] as String,
+      timestamp: json['timestamp'] == null ? null : (json['timestamp'] as Timestamp).toDate() as DateTime,
   );
 }
 Map<String, dynamic> _PostToJson(Post instance) => <String, dynamic> {
@@ -40,5 +42,6 @@ Map<String, dynamic> _PostToJson(Post instance) => <String, dynamic> {
   'userId': instance.userId,
   'postId': instance.postId,
   'username': instance.username,
-  'timestamp': instance.timestamp
+  'timestamp': instance.timestamp,
+  'location' : instance.location,
 };

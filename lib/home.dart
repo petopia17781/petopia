@@ -203,6 +203,12 @@ class _MyHomeWidgetState extends State<MyHomeWidget> with AutomaticKeepAliveClie
         });
   }
 
+  String GetTime(DateTime t) {
+    if (t != null) {
+      return t.year.toString() + "-" + t.month.toString() + "-" + t.day.toString();
+    }
+    return "";
+  }
   Widget postLists(Post post) {
     return Container(
         color: Colors.white,
@@ -238,6 +244,17 @@ class _MyHomeWidgetState extends State<MyHomeWidget> with AutomaticKeepAliveClie
                   margin: const EdgeInsets.only(left: 20.0),
                   child: Text(
                     post.username,
+
+                  ),
+                )
+              ],
+            ),
+            Row(
+              children: <Widget>[
+                Container(
+                  margin: const EdgeInsets.only(left: 20.0),
+                  child: Text(
+                    GetTime(post.timestamp)
                   ),
                 )
               ],
@@ -245,7 +262,7 @@ class _MyHomeWidgetState extends State<MyHomeWidget> with AutomaticKeepAliveClie
             Row(
               mainAxisAlignment: MainAxisAlignment.start,
               children: <Widget>[
-                Padding(padding: const EdgeInsets.only(left: 150.0, top: 40)),
+                Padding(padding: const EdgeInsets.only(left: 150.0, top: 10)),
                 GetLikeIcon(),
               ],
             )
@@ -279,7 +296,7 @@ class _MyHomeWidgetState extends State<MyHomeWidget> with AutomaticKeepAliveClie
   }
 
   void loadPosts() async {
-    Future<QuerySnapshot> ps = postCollection.getDocuments();
+    Future<QuerySnapshot> ps = postCollection.orderBy("timestamp", descending: true).getDocuments();
 
     setState(() {
       posts = ps;

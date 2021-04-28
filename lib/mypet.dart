@@ -1,6 +1,6 @@
 // import 'package:charts_flutter/flutter.dart';
 import 'package:flutter/material.dart';
-import 'package:petopia/repository/DataRepository.dart';
+import 'package:petopia/repository/PetRepository.dart';
 import 'package:petopia/home.dart';
 
 import 'models/Pet.dart';
@@ -25,7 +25,7 @@ class MyPetPage extends StatefulWidget {
 }
 
 class _MyPetPageState extends State<MyPetPage> {
-  final DataRepository repository = DataRepository();
+  final PetRepository repository = PetRepository();
 
   List<bool> reminderVal = [true, false, true];
   List<String> reminderText = ['Walking', 'Prepare meal', 'Playing'];
@@ -44,7 +44,7 @@ class _MyPetPageState extends State<MyPetPage> {
       // called again, and so nothing would appear to happen.
       _counter += 2;
     });
-    repository.addPet(Pet(_counter.toString(), type:"cat"));
+    repository.addPet(Pet(_counter.toString(), "pet1", type:"cat"));
   }
 
   @override
@@ -72,6 +72,16 @@ class _MyPetPageState extends State<MyPetPage> {
             Center(child: buildPetPage('Lucas', context)),
             Center(child: buildPetPage('Kitty', context)),
           ],
+        ),
+        floatingActionButton: FloatingActionButton(
+          backgroundColor: colorScheme.primary,
+          foregroundColor: Colors.black,
+          onPressed: () {
+            setState(() {
+              // _selectImage(context);
+            });
+          },
+          child: Icon(Icons.add),
         ),
       ),
     );

@@ -5,6 +5,8 @@ import 'package:flutter/material.dart';
 import 'dart:io';
 import 'package:image_picker_modern/image_picker_modern.dart';
 import 'package:petopia/home.dart';
+import 'package:petopia/models/Post.dart';
+import 'package:petopia/repository/PostRepository.dart';
 import 'package:uuid/uuid.dart';
 
 class CreatePostPage extends StatefulWidget {
@@ -13,7 +15,6 @@ class CreatePostPage extends StatefulWidget {
   final File file;
   @override
   _CreatePostPageState createState() {
-    print(file);
     return _CreatePostPageState(file);
   }
 }
@@ -34,7 +35,7 @@ class _CreatePostPageState extends State<CreatePostPage> {
   }
 
   @override
-  initState() {
+  void initState() {
     //variables with location assigned as 0.0
     currentLocation['latitude'] = 0.0;
     currentLocation['longitude'] = 0.0;
@@ -51,11 +52,14 @@ class _CreatePostPageState extends State<CreatePostPage> {
   // }
 
   Widget build(BuildContext context) {
+    final textTheme = Theme.of(context).textTheme;
+    final colorScheme = Theme.of(context).colorScheme;
     return file == null
-        ? MyHomeWidget(): Scaffold(
+        ? MyHomeWidget()
+        : Scaffold(
             resizeToAvoidBottomInset: false,
             appBar: AppBar(
-              backgroundColor: Colors.white70,
+              backgroundColor: colorScheme.primary,
               leading: IconButton(
                   icon: Icon(Icons.arrow_back, color: Colors.black),
                   onPressed: clearImage),
@@ -130,7 +134,6 @@ class _CreatePostPageState extends State<CreatePostPage> {
       uploading = true;
     });
 
-    print("postToFireStore");
     uploadImage(file).then((String data) {
       postToFireStore(
           mediaUrl: data,
@@ -150,57 +153,66 @@ class PostForm extends StatelessWidget {
   final TextEditingController descriptionController;
   final TextEditingController locationController;
   final bool loading;
+
+  FocusNode _focusNode = FocusNode();
   PostForm(
       {this.imageFile,
       this.descriptionController,
       this.loading,
       this.locationController});
   String imageUrl = "https://images.indianexpress.com/2019/04/cat_759getty.jpg";
-  Widget build(BuildContext context) {
-    return Column(
-      children: <Widget>[
-        loading
-            ? LinearProgressIndicator()
-            : Padding(padding: EdgeInsets.only(top: 0.0)),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
-        children:<Widget>[CircleAvatar(backgroundImage: NetworkImage(imageUrl)
-          // backgroundImage: NetworkImage(currentUserModel.photoUrl),
-          )]),
-        Row(
 
-          children: <Widget>[
-            Container(
-              width: 250.0,
-              height: 100,
-              child: TextField(
-                controller: descriptionController,
-                decoration: InputDecoration(
-                    hintText: "Write a caption...", border: InputBorder.none),
+  Widget build(BuildContext context) {
+    final textTheme = Theme.of(context).textTheme;
+    final colorScheme = Theme.of(context).colorScheme;
+    return Column(children: <Widget>[
+      loading
+          ? LinearProgressIndicator()
+          : Padding(padding: EdgeInsets.only(top: 10.0)),
+      Row(mainAxisAlignment: MainAxisAlignment.spaceAround, children: <Widget>[
+        CircleAvatar(backgroundImage: NetworkImage(imageUrl)
+            // backgroundImage: NetworkImage(currentUserModel.photoUrl),
+            )
+      ]),
+      Row(
+        children: <Widget>[
+          Padding(padding: EdgeInsets.all(10.0)),
+          Container(
+            width: 360,
+            height: 200,
+            child: TextField(
+              autofocus: true,
+              controller: descriptionController,
+              keyboardType: TextInputType.text,
+              decoration: InputDecoration(
+                  hintText: "Write a caption...", border: InputBorder.none),
+              focusNode: _focusNode,
+            ),
+          ),
+        ],
+      ),
+      Row(
+        children: <Widget>[
+          Padding(padding: EdgeInsets.all(20.0)),
+          Padding(padding: EdgeInsets.only(top: 20.0)),
+          Container(
+            height: 150.0,
+            width: 150.0,
+            child: AspectRatio(
+              aspectRatio: 487 / 451,
+              child: Container(
+                decoration: BoxDecoration(
+                    image: DecorationImage(
+                  fit: BoxFit.fill,
+                  alignment: FractionalOffset.topCenter,
+                  image: FileImage(imageFile),
+                )),
               ),
             ),
-          ],
-
-        ),
-        Row (
-          children: <Widget>[
-            Container(
-              height: 300.0,
-              width: 300.0,
-              child: AspectRatio(
-                aspectRatio: 487 / 451,
-                child: Container(
-                  decoration: BoxDecoration(
-                      image: DecorationImage(
-                        fit: BoxFit.fill,
-                        alignment: FractionalOffset.topCenter,
-                        image: FileImage(imageFile),
-                      )),
-                ),
-              ),
-            )
-          ],
-        )]);
+          )
+        ],
+      )
+    ]);
     //     ListTile(
     //       leading: Icon(Icons.pin_drop),
     //       title: Container(
@@ -221,30 +233,28 @@ class PostForm extends StatelessWidget {
 Future<String> uploadImage(var imageFile) async {
   var uuid = Uuid().v1();
   StorageReference ref = FirebaseStorage.instance.ref().child("post_$uuid.jpg");
+  print("uploading " + "post_$uuid.jpg");
   StorageUploadTask uploadTask = ref.putFile(imageFile);
   StorageTaskSnapshot taskSnapshot = await uploadTask.onComplete;
-  taskSnapshot.ref.getDownloadURL().then(
-        (value) => print("Done: $value"),
-  );
-  return ref.getPath();
+  String downloadUrl = await taskSnapshot.ref.getDownloadURL();
+  print("upload completed " + downloadUrl);
+  return downloadUrl;
 }
 
 void postToFireStore(
     {String mediaUrl, String location, String description}) async {
-  var reference = Firestore.instance.collection('posts');
-  reference.add({
-    //"username": "currentUserModel.username",
-    "username": "yihuatest",
-    // "location": location,
-    // "likes": {},
-    "mediaUrl": mediaUrl,
-    "description": description,
-    "ownerId": 123456,
-    // "ownerId": googleSignIn.currentUser.id,
-    "timestamp": DateTime.now(),
-  }).then((DocumentReference doc) {
+  print(mediaUrl.toString());
+  PostRepository postRepository = PostRepository();
+  postRepository.addPost(new Post(
+      "post1",
+      username: "yihuatest",
+      mediaUrl: mediaUrl,
+      description: description,
+      userId: "user1",
+      timestamp: DateTime.now()
+  )).then((DocumentReference doc) {
     String docId = doc.documentID;
-    reference.document(docId).updateData({"postId": docId});
+    postRepository.collection.document(docId).updateData({"postId": docId});
   });
 }
 

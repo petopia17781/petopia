@@ -26,9 +26,12 @@ class MyPetPage extends StatefulWidget {
 
 class _MyPetPageState extends State<MyPetPage> {
   final DataRepository repository = DataRepository();
+
   List<bool> reminderVal = [true, false, true];
   List<String> reminderText = ['Walking', 'Prepare meal', 'Playing'];
   List<String> reminderTime = ['8:00am', '11:00am', '5:00pm'];
+
+  List<String> recordDates = ['04/27/2021','04/26/2021','04/25/2021'];
 
   int _counter = 0;
 
@@ -104,8 +107,14 @@ class _MyPetPageState extends State<MyPetPage> {
           backgroundColor: colorScheme.primary,
           foregroundColor: Colors.black,
           onPressed: () {
+
             setState(() {
               _addRecord(context);
+              // if (DefaultTabController.of(context).index == 0) {
+              //   _addRecord(context);
+              // } else {
+              //   _addReminder(context);
+              // }
             });
           },
           child: Icon(Icons.add),
@@ -126,7 +135,7 @@ class _MyPetPageState extends State<MyPetPage> {
             mainAxisSize: MainAxisSize.min,
             children: <Widget>[
               TextFormField(
-                initialValue: '04/27/2021',
+                initialValue: '04/28/2021',
                 maxLength: 20,
                 decoration: InputDecoration(
                   icon: Icon(Icons.favorite),
@@ -154,7 +163,12 @@ class _MyPetPageState extends State<MyPetPage> {
           actions: [
             FlatButton(
               textColor: shrinePink400,
-              onPressed: () => Navigator.pop(context),
+              onPressed: () {
+                setState(() {
+                  recordDates.insert(0, '04/28/2021');
+                });
+                Navigator.pop(context);
+              },
               child: Text('Confirm'),
             ),
             FlatButton(
@@ -168,11 +182,56 @@ class _MyPetPageState extends State<MyPetPage> {
     );
   }
 
+  _addReminder(BuildContext parentContext) async {
+    return showDialog<Null>(
+        context: parentContext,
+        barrierDismissible: false,
+
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: const Text('Create a new reminder'),
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: <Widget>[
+                TextFormField(
+                  initialValue: 'Sleeping',
+                  maxLength: 20,
+                  decoration: InputDecoration(
+                    icon: Icon(Icons.favorite),
+                    labelText: 'Reminder',
+                  ),
+                ),
+              ],
+            ),
+            actions: [
+              FlatButton(
+                textColor: shrinePink400,
+                onPressed: () {
+                  setState(() {
+                    reminderVal.add(true);
+                    reminderTime.add("10:00pm");
+                    reminderText.add("Sleeping");
+                  });
+                  Navigator.pop(context);
+                },
+                child: Text('Confirm'),
+              ),
+              FlatButton(
+                textColor: shrinePink400,
+                onPressed: () => Navigator.pop(context),
+                child: Text('Cancel'),
+              ),
+            ],
+          );
+        }
+    );
+  }
+
   Widget buildRecordList(String tab) {
     return ListView(
       children: [
-        buildRecord('04/13/2021'),
-        buildRecord('04/14/2021'),
+        for (int i = 0; i < recordDates.length; i++)
+          buildRecord(recordDates[i])
       ],
     );
   }

@@ -31,7 +31,7 @@ Post _PostFromJson(Map<String, dynamic> json)  {
       userId: json['userId'] as String,
       mediaUrl: json['mediaUrl'] as String,
       username: json['username'] as String,
-      timestamp: json['date'] == null ? null : (json['date'] as Timestamp).toDate() as DateTime,
+      timestamp: json['timestamp'] == null ? null : (json['timestamp'] as Timestamp).toDate() as DateTime,
   );
 }
 Map<String, dynamic> _PostToJson(Post instance) => <String, dynamic> {

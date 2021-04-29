@@ -3,9 +3,8 @@ import 'package:petopia/models/Post.dart';
 import 'package:petopia/models/Pet.dart';
 
 class User {
-  String userId;
+  final String userId;
   String name;
-  String password;
   String notes;
 
   List<Pet> pets;
@@ -13,7 +12,7 @@ class User {
 
   DocumentReference reference;
 
-  User(this.userId, this.name, this.password, {this.notes, this.pets, this.posts, this.reference});
+  User(this.userId, this.name, {this.notes, this.pets, this.posts, this.reference});
 
   factory User.fromSnapshot(DocumentSnapshot snapshot) {
     User newUser = User.fromJson(snapshot.data);
@@ -33,7 +32,6 @@ User _UserFromJson(Map<String, dynamic> json) {
   return User(
       json['userId'] as String,
       json['name'] as String,
-      json['password'] as String,
       notes: json['notes'] as String,
       pets: _convertPets(json['pets'] as List),
       posts: _convertPosts(json['posts'] as List)
@@ -43,7 +41,6 @@ User _UserFromJson(Map<String, dynamic> json) {
 Map<String, dynamic> _UserToJson(User instance) => <String, dynamic> {
   'userId': instance.userId,
   'name': instance.name,
-  'password': instance.name,
   'notes': instance.notes,
   'pets': _PetList(instance.pets),
   'posts': _PostList(instance.posts),

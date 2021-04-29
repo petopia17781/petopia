@@ -41,25 +41,6 @@ class SignUpPage extends StatelessWidget {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Text(
-                      "Don’t have an account? ",
-                      style: TextStyle(fontSize: 1.75 * SizeConfig.textMultiplier),
-                    ),
-                    GestureDetector(
-                      onTap: toggleView,
-                      child: Text(
-                        "Sign In",
-                        style: TextStyle(
-                            fontSize: 1.75 * SizeConfig.textMultiplier,
-                            color: colorScheme.primary),
-                      ),
-                    ),
-                  ],
-                ),
-                SizedBox(height: 2 * SizeConfig.heightMultiplier),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
                     SnsOptionCard(
                       icon: "assets/icons/google-icon.svg",
                       press: () {},
@@ -71,6 +52,25 @@ class SignUpPage extends StatelessWidget {
                     SnsOptionCard(
                       icon: "assets/icons/twitter.svg",
                       press: () {},
+                    ),
+                  ],
+                ),
+                SizedBox(height: 2 * SizeConfig.heightMultiplier),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      "Already had an account? ",
+                      style: TextStyle(fontSize: 1.75 * SizeConfig.textMultiplier),
+                    ),
+                    GestureDetector(
+                      onTap: toggleView,
+                      child: Text(
+                        "Sign In",
+                        style: TextStyle(
+                            fontSize: 1.75 * SizeConfig.textMultiplier,
+                            color: colorScheme.primary),
+                      ),
                     ),
                   ],
                 ),

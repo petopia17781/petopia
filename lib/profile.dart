@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:intl/intl.dart';
 import 'package:petopia/SizeConfig.dart';
+import 'package:petopia/services/auth.dart';
 
 class ProfilePage extends StatefulWidget {
   ProfilePage({Key key, this.title}) : super(key: key);
@@ -51,15 +52,15 @@ class _ProfilePageState extends State<ProfilePage> {
 }
 
 class Header extends StatelessWidget {
-  const Header({
-    Key key,
-    @required this.username,
-    @required this.avatar,
-    this.facebook,
-    this.twitter,
-    @required this.follower,
-    @required this.followee
-  }) : super(key: key);
+  const Header(
+      {Key key,
+      @required this.username,
+      this.avatar,
+      this.facebook,
+      this.twitter,
+      @required this.follower,
+      @required this.followee})
+      : super(key: key);
 
   final String username, avatar;
   final String facebook, twitter;
@@ -67,6 +68,9 @@ class Header extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+
+    final AuthService _auth = AuthService();
+
     return Container(
       color: shrinePink400,
       height: 30 * SizeConfig.heightMultiplier,
@@ -84,12 +88,13 @@ class Header extends StatelessWidget {
                   decoration: BoxDecoration(
                       shape: BoxShape.circle,
                       image: DecorationImage(
-                          fit: BoxFit.cover, image: NetworkImage(avatar))),
+                          fit: BoxFit.cover,
+                          image: NetworkImage(avatar == null ? "https://images-na.ssl-images-amazon.com/images/I/31Rgh5fBqDL.jpg" : avatar))),
                 ),
                 SizedBox(
                   width: 5 * SizeConfig.widthMultiplier,
                 ),
-                // User name & SSN
+                // User name & SNS
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
@@ -104,7 +109,7 @@ class Header extends StatelessWidget {
                     SizedBox(
                       height: 1 * SizeConfig.heightMultiplier,
                     ),
-                    // ssn account
+                    // sns account
                     Row(
                       children: <Widget>[
                         Row(
@@ -195,13 +200,19 @@ class Header extends StatelessWidget {
                     border: Border.all(color: Colors.black26),
                     borderRadius: BorderRadius.circular(5.0),
                   ),
-                  child: Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Text(
-                      "EDIT PROFILE",
-                      style: TextStyle(
-                          color: Colors.black26,
-                          fontSize: 1.8 * SizeConfig.textMultiplier),
+                  child: GestureDetector(
+                    onTap: () async {
+                      await _auth.signOut();
+                    },
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Text(
+                        "SIGN OUT",
+                        style: TextStyle(
+                            color: Colors.black26,
+                            fontSize: 1.8 * SizeConfig.textMultiplier),
+
+                      ),
                     ),
                   ),
                 )

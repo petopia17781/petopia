@@ -8,11 +8,14 @@ import 'package:image_picker_modern/image_picker_modern.dart';
 import 'package:petopia/createposts.dart';
 import 'package:petopia/mypet.dart';
 import 'package:petopia/nearby.dart';
-import 'package:petopia/profile.dart';
 import 'package:flutter/material.dart';
+import 'package:petopia/profileWrapper.dart';
+import 'package:petopia/services/auth.dart';
 import 'package:petopia/store.dart';
+import 'package:provider/provider.dart';
 
 import 'models/Post.dart';
+import 'models/User.dart';
 
 
 final postCollection = Firestore.instance.collection("posts");
@@ -35,7 +38,10 @@ class _MyHomePageState extends State<MyHomePage> {
     StorePage(title: "Store"),
     MyPetPage(title: "My Pet"),
     NearbyPage(title: "Nearby"),
-    ProfilePage(title: "My Profile"),
+    StreamProvider<User>.value(
+        value: AuthService().user,
+        child: ProfileWrapper()
+    )
   ];
 
   Widget getAppBar(BuildContext context) {

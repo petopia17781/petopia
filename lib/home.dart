@@ -1,14 +1,14 @@
 import 'dart:collection';
 import 'dart:io';
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flare_flutter/flare_actor.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:image_picker_modern/image_picker_modern.dart';
 import 'package:petopia/createposts.dart';
 import 'package:petopia/mypet.dart';
 import 'package:petopia/nearby.dart';
 import 'package:flutter/material.dart';
+import 'package:petopia/SizeConfig.dart';
 import 'package:petopia/profileWrapper.dart';
 import 'package:petopia/services/auth.dart';
 import 'package:petopia/store.dart';
@@ -44,31 +44,12 @@ class _MyHomePageState extends State<MyHomePage> {
     )
   ];
 
-  Widget getAppBar(BuildContext context) {
-    final textTheme = Theme.of(context).textTheme;
-    final colorScheme = Theme.of(context).colorScheme;
-    return AppBar(
-      leading: Icon(Icons.menu),
-      title: Center(child: Text("Petopia")),
-      actions: [
-        Icon(Icons.favorite),
-        Padding(
-          padding: EdgeInsets.symmetric(horizontal: 16),
-          child: Icon(Icons.search),
-        ),
-        Icon(Icons.more_vert),
-      ],
-      backgroundColor: colorScheme.primary,
-    );
-  }
-
-
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
     final colorScheme = Theme.of(context).colorScheme;
     return Scaffold(
-        appBar: getAppBar(context),
+        // appBar: getAppBar(context),
         body: Center(child: _widgetOptions.elementAt(_selectedIndex)),
         bottomNavigationBar: BottomNavigationBar(
           type: BottomNavigationBarType.fixed,
@@ -130,152 +111,6 @@ class _MyHomeWidgetState extends State<MyHomeWidget> with AutomaticKeepAliveClie
     loadPosts();
   }
 
-
-  GetPostHeader({String ownerId}) {
-    if (ownerId == null) {
-      return Text("owner error");
-    }
-
-    return ListTile(
-      leading: CircleAvatar(
-        backgroundImage: CachedNetworkImageProvider(imageUrl),
-        backgroundColor: Colors.grey,
-      ),
-      title: GestureDetector(
-        child: Text("My test"),
-        onTap: () {
-          // openProfile(context, ownerId);
-        },
-      ),
-      subtitle: Text("yihua test"),
-      trailing: const Icon(Icons.more_vert),
-    );
-  }
-
-  bool showHeart = false;
-  GestureDetector GetImage(String img) {
-    return GestureDetector(
-      // onDoubleTap: () => _likePost(postId),
-      child: Stack(
-        alignment: Alignment.center,
-        children: <Widget>[
-          CachedNetworkImage(
-            imageUrl: img,
-            fit: BoxFit.fill,
-            height: 150,
-            placeholder: (context, url) => loadingPlaceHolder,
-            errorWidget: (context, url, error) => Icon(Icons.error),
-          ),
-          showHeart
-              ? Positioned(
-                  child: Container(
-                    // width: 100,
-                    // height: 100,
-                    child: Opacity(
-                        opacity: 0.85,
-                        child: FlareActor(
-                          "assets/flare/Like.flr",
-                          animation: "Like",
-                        )),
-                  ),
-                )
-              : Container()
-        ],
-      ),
-    );
-  }
-
-  GestureDetector GetLikeIcon() {
-    Color color;
-    IconData icon;
-
-    if (liked) {
-      color = Colors.pink;
-      icon = Icons.favorite;
-    } else {
-      icon = Icons.favorite_border;
-    }
-
-    return GestureDetector(
-        child: Icon(
-          icon,
-          size: 24.0,
-          color: color,
-        ),
-        onTap: () {
-          setState(() {
-            liked = !liked;
-          });
-        });
-  }
-
-  String GetTime(DateTime t) {
-    if (t != null) {
-      return t.year.toString() + "-" + t.month.toString() + "-" + t.day.toString();
-    }
-    return "";
-  }
-  Widget postLists(Post post) {
-    return Container(
-        color: Colors.white,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          mainAxisSize: MainAxisSize.min,
-          children: <Widget>[
-            GetImage(post.mediaUrl),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: <Widget>[
-                Padding(padding: const EdgeInsets.only(left: 20.0)),
-                Text(post.description),
-                // Padding(padding: const EdgeInsets.only(right: 20.0)),
-                // GestureDetector(
-                //   child: const Icon(
-                //     Icons.comment,
-                //     size: 25.0,
-                //   ),
-                //   // onTap: () {
-                //   //   goToComments(
-                //   //       context: context,
-                //   //       postId: postId,
-                //   //       ownerId: ownerId,
-                //   //       mediaUrl: mediaUrl);
-                //   // }
-                // ),
-              ],
-            ),
-            Row(
-              children: <Widget>[
-                Container(
-                  margin: const EdgeInsets.only(left: 20.0),
-                  child: Text(
-                    post.username,
-
-                  ),
-                )
-              ],
-            ),
-            Row(
-              children: <Widget>[
-                Container(
-                  margin: const EdgeInsets.only(left: 20.0),
-                  child: Text(
-                    GetTime(post.timestamp)
-                  ),
-                )
-              ],
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: <Widget>[
-                Padding(padding: const EdgeInsets.only(left: 150.0, top: 10)),
-                GetLikeIcon(),
-              ],
-            )
-          ],
-        ));
-  }
-
   StaggeredGridView BuildPostResults(List<DocumentSnapshot> docs) {
     List<Post> postModels = [];
 
@@ -290,14 +125,14 @@ class _MyHomeWidgetState extends State<MyHomeWidget> with AutomaticKeepAliveClie
   Widget getImageGrid(postModels) {
     return StaggeredGridView.countBuilder(
         crossAxisCount: 2,
-        crossAxisSpacing: 20,
-        mainAxisSpacing: 15,
+        crossAxisSpacing: 3 * SizeConfig.widthMultiplier,
+        mainAxisSpacing: 1 * SizeConfig.heightMultiplier,
         itemCount: postModels.length,
         itemBuilder: (context, index) {
-          return postLists(postModels[index]);
+          return PostCard(post: postModels[index]);
         },
         staggeredTileBuilder: (index) {
-          return StaggeredTile.count(1, 1.2);
+          return StaggeredTile.count(1, 1.1);
         });
   }
 
@@ -317,33 +152,43 @@ class _MyHomeWidgetState extends State<MyHomeWidget> with AutomaticKeepAliveClie
     if (file != null) {
       return CreatePostPage(file: file);
     } else {
-      return SafeArea(
-        child: Scaffold(
-          backgroundColor: colorScheme.secondary,
-          body: Container(
-            margin: EdgeInsets.all(10),
-            child: FutureBuilder<QuerySnapshot>(
-                future: posts,
-                builder: (context, snapshot) {
-                  if (snapshot.hasData) {
-                    return BuildPostResults(snapshot.data.documents);
-                  } else {
-                    return Container(
-                        alignment: FractionalOffset.center,
-                        child: CircularProgressIndicator());
-                  }
-                }),
-          ),
-          floatingActionButton: FloatingActionButton(
-            backgroundColor: colorScheme.primary,
-            foregroundColor: Colors.black,
-            onPressed: () {
-              setState(() {
-                _selectImage(context);
-              });
-            },
-            child: Icon(Icons.add),
-          ),
+      return Scaffold(
+        appBar: AppBar(
+          leading: Icon(Icons.menu),
+          title: Center(child: Text("Petopia")),
+          actions: [
+            Icon(Icons.search),
+            Padding(
+              padding: EdgeInsets.symmetric(horizontal: 16),
+              child: Icon(Icons.mail),
+            ),
+          ],
+          backgroundColor: colorScheme.primary,
+        ),
+        backgroundColor: colorScheme.secondary,
+        body: Container(
+          margin: EdgeInsets.all(10),
+          child: FutureBuilder<QuerySnapshot>(
+              future: posts,
+              builder: (context, snapshot) {
+                if (snapshot.hasData) {
+                  return BuildPostResults(snapshot.data.documents);
+                } else {
+                  return Container(
+                      alignment: FractionalOffset.center,
+                      child: CircularProgressIndicator());
+                }
+              }),
+        ),
+        floatingActionButton: FloatingActionButton(
+          backgroundColor: colorScheme.primary,
+          foregroundColor: Colors.black,
+          onPressed: () {
+            setState(() {
+              _selectImage(context);
+            });
+          },
+          child: Icon(Icons.add),
         ),
       );
   }}
@@ -401,4 +246,107 @@ class _MyHomeWidgetState extends State<MyHomeWidget> with AutomaticKeepAliveClie
 
   @override
   bool get wantKeepAlive => true;
+}
+
+class PostCard extends StatelessWidget {
+  const PostCard({
+    Key key,
+    this.width = 140,
+    this.aspectRetio = 1.02,
+    @required this.post,
+  }) : super(key: key);
+
+  final double width, aspectRetio;
+  final Post post;
+
+  @override
+  Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    return Padding(
+      padding: EdgeInsets.symmetric(horizontal: 2 * SizeConfig.widthMultiplier),
+      child: SizedBox(
+        width: 30 * SizeConfig.widthMultiplier,
+        child: GestureDetector(
+          onTap: () {},
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Container(
+                padding: EdgeInsets.all(0 * SizeConfig.widthMultiplier),
+                decoration: BoxDecoration(
+                  color: Colors.white.withOpacity(0.5),
+                  borderRadius: BorderRadius.circular(15),
+                ),
+                child: Column(
+                  // mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    // picture
+                    Hero(
+                      tag: post.postId,
+                      child: AspectRatio(
+                          aspectRatio: 1.3,
+                          child: Image.network(post.mediaUrl)
+                      ),
+                    ),
+                    Container(
+
+                      padding: EdgeInsets.symmetric(horizontal: 3 * SizeConfig.widthMultiplier),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          Text(
+                            post.description,
+                            style: TextStyle(color: Colors.black),
+                            maxLines: 2,
+                          ),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(
+                                post.username,
+                                style: TextStyle(
+                                  fontSize: 1.5 * SizeConfig.textMultiplier,
+                                  fontWeight: FontWeight.w600,
+                                  color: colorScheme.primary,
+                                ),
+                              ),
+                              InkWell(
+                                borderRadius: BorderRadius.circular(50),
+                                onTap: () {},
+                                child: Container(
+                                  padding: EdgeInsets.all(0.5 * SizeConfig.widthMultiplier),
+                                  height: 5 * SizeConfig.heightMultiplier,
+                                  width: 5 * SizeConfig.widthMultiplier,
+                                  decoration: BoxDecoration(
+                                    color: post.isLike
+                                        ? colorScheme.primary.withOpacity(0.15)
+                                        : colorScheme.secondary.withOpacity(0.1),
+                                    shape: BoxShape.circle,
+                                  ),
+                                  child: SvgPicture.asset(
+                                    "assets/icons/Heart Icon_2.svg",
+                                    color: post.isLike
+                                        ? Colors.red
+                                        : Colors.grey.withOpacity(0.5),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          )
+                        ],
+                      ),
+                    ),
+
+                  ],
+                ),
+              ),
+              const SizedBox(height: 10),
+
+
+            ],
+          ),
+        ),
+      ),
+    );
+  }
 }

@@ -10,7 +10,8 @@ class Post {
   DocumentReference reference;
   DateTime timestamp;
   String location;
-  Post(this.postId, {this.description, this.mediaUrl, this.userId, this.reference, this.username, this.timestamp, this.location});
+  bool isLike;
+  Post(this.postId, {this.description, this.mediaUrl, this.userId, this.reference, this.username, this.timestamp, this.location, this.isLike = false});
   factory Post.fromSnapshot(DocumentSnapshot snapshot) {
     Post newPost = Post.fromJson(snapshot.data);
     newPost.reference = snapshot.reference;

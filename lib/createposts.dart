@@ -58,7 +58,7 @@ class _CreatePostPageState extends State<CreatePostPage> {
     final textTheme = Theme.of(context).textTheme;
     final colorScheme = Theme.of(context).colorScheme;
     return file == null
-        ? MyHomeWidget()
+        ? HomePage()
         : Scaffold(
             resizeToAvoidBottomInset: false,
             appBar: AppBar(

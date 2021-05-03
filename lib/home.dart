@@ -5,104 +5,26 @@ import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:image_picker_modern/image_picker_modern.dart';
 import 'package:petopia/createposts.dart';
-import 'package:petopia/mypet.dart';
-import 'package:petopia/nearby.dart';
 import 'package:flutter/material.dart';
 import 'package:petopia/SizeConfig.dart';
-import 'package:petopia/profileWrapper.dart';
-import 'package:petopia/services/auth.dart';
-import 'package:petopia/store.dart';
-import 'package:provider/provider.dart';
 
 import 'models/Post.dart';
-import 'models/User.dart';
 
 
 final postCollection = Firestore.instance.collection("posts");
-class MyHomePage extends StatefulWidget {
-  MyHomePage({Key key, this.title}) : super(key: key);
 
-  final String title;
-
-  @override
-  _MyHomePageState createState() => _MyHomePageState();
-}
-
-class _MyHomePageState extends State<MyHomePage> {
-  int _selectedIndex = 0;
-
-  static const TextStyle optionStyle =
-      TextStyle(fontSize: 30, fontWeight: FontWeight.bold);
-  static List<Widget> _widgetOptions = <Widget>[
-    MyHomeWidget(),
-    StorePage(title: "Store"),
-    MyPetPage(title: "My Pet"),
-    NearbyPage(title: "Nearby"),
-    StreamProvider<User>.value(
-        value: AuthService().user,
-        child: ProfileWrapper()
-    )
-  ];
-
-  @override
-  Widget build(BuildContext context) {
-    final textTheme = Theme.of(context).textTheme;
-    final colorScheme = Theme.of(context).colorScheme;
-    return Scaffold(
-        // appBar: getAppBar(context),
-        body: Center(child: _widgetOptions.elementAt(_selectedIndex)),
-        bottomNavigationBar: BottomNavigationBar(
-          type: BottomNavigationBarType.fixed,
-          backgroundColor: colorScheme.primary,
-          currentIndex: _selectedIndex,
-          selectedItemColor: colorScheme.onSurface,
-          unselectedItemColor: colorScheme.onSurface.withOpacity(.60),
-          selectedLabelStyle: textTheme.caption,
-          unselectedLabelStyle: textTheme.caption,
-          onTap: (value) {
-            setState(() => _selectedIndex = value);
-          },
-          items: [
-            BottomNavigationBarItem(
-              title: Text('Home'),
-              icon: Icon(Icons.home),
-            ),
-            BottomNavigationBarItem(
-              title: Text('Store'),
-              icon: Icon(Icons.store),
-            ),
-            BottomNavigationBarItem(
-              title: Text('My Pet'),
-              icon: Icon(Icons.pets),
-            ),
-            BottomNavigationBarItem(
-              title: Text('Nearby'),
-              icon: Icon(Icons.location_on_rounded),
-            ),
-            BottomNavigationBarItem(
-              title: Text('Profile'),
-              icon: Icon(Icons.person),
-            ),
-          ],
-        ));
-  }
-}
-
-class MyHomeWidget extends StatefulWidget {
+class HomePage extends StatefulWidget {
   @override
   State<StatefulWidget> createState() {
-    return _MyHomeWidgetState();
+    return _HomePageState();
   }
 }
 
-class _MyHomeWidgetState extends State<MyHomeWidget> with AutomaticKeepAliveClientMixin<MyHomeWidget>{
+class _HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin<HomePage>{
   Container loadingPlaceHolder = Container(
     height: 500.0,
     child: Center(child: CircularProgressIndicator()),
   );
-  String imageUrl = "https://images.indianexpress.com/2019/04/cat_759getty.jpg";
-  Map likes = new HashMap();
-  bool liked = false;
   File file;
   Future<QuerySnapshot> posts;
 

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'SizeConfig.dart';
-import 'home.dart';
+import 'package:petopia/SizeConfig.dart';
+import 'package:petopia/bottomNavigationWrapper.dart';
 
 void main() {
   runApp(MyApp());
@@ -18,7 +18,7 @@ class MyApp extends StatelessWidget {
             return MaterialApp(
               title: 'Petopia',
               theme: _buildShrineTheme(),
-              home: MyHomePage(title: 'Home Page'),
+              home: BottomNavigation(),
             );
           },
         );

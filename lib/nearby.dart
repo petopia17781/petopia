@@ -6,7 +6,7 @@ import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:location/location.dart';
-import 'package:http/http.dart' as http;
+import 'package:flutter_config/flutter_config.dart';
 
 import 'data/error.dart';
 import 'data/place_response.dart';
@@ -33,7 +33,7 @@ class NearbyPage extends StatefulWidget {
 
 class _NearbyPageState extends State<NearbyPage> {
   Completer<GoogleMapController> _controller = Completer();
-  static const String _API_KEY = 'AIzaSyCNd8D2Qc3pbqx7fDtjh2Eop09i3rZJrjA';
+  static String _API_KEY = FlutterConfig.get('API_KEY');
   static const String baseUrl =
       "https://maps.googleapis.com/maps/api/place/nearbysearch/json";
 
@@ -98,16 +98,6 @@ class _NearbyPageState extends State<NearbyPage> {
   Error error;
   List<Result> places;
   bool searching = true;
-  // Set<Marker> _createMarkers() {
-  //   return <Marker> [
-  //     Marker(
-  //       markerId: MarkerId("Home"),
-  //       position: LatLng(position.latitude, position.longitude),
-  //       icon: BitmapDescriptor.defaultMarker,
-  //       infoWindow: InfoWindow(title: "Home",),
-  //     )
-  //   ].toSet();
-  // }
 
   void searchNearby(Position pos) async {
     setState(() {

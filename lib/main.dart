@@ -4,8 +4,12 @@ import 'package:petopia/bottomNavigationWrapper.dart';
 import 'package:petopia/models/User.dart';
 import 'package:petopia/services/auth.dart';
 import 'package:provider/provider.dart';
+import 'package:flutter_config/flutter_config.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized(); // Required by FlutterConfig
+  await FlutterConfig.loadEnvVariables();
+
   runApp(MyApp());
 }
 

@@ -1,29 +1,26 @@
 import 'dart:collection';
 import 'dart:io';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flare_flutter/flare_actor.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:image_picker_modern/image_picker_modern.dart';
 import 'package:petopia/createposts.dart';
 import 'package:petopia/mypet.dart';
 import 'package:petopia/nearby.dart';
-import 'package:petopia/profile.dart';
 import 'package:flutter/material.dart';
+import 'package:petopia/profileWrapper.dart';
+import 'package:petopia/services/auth.dart';
 import 'package:petopia/store.dart';
+import 'package:provider/provider.dart';
+
+import 'models/Post.dart';
+import 'models/User.dart';
 
 
-
+final postCollection = Firestore.instance.collection("posts");
 class MyHomePage extends StatefulWidget {
   MyHomePage({Key key, this.title}) : super(key: key);
-
-  // This widget is the home page of your application. It is stateful, meaning
-  // that it has a State object (defined below) that contains fields that affect
-  // how it looks.
-
-  // This class is the configuration for the state. It holds the values (in this
-  // case the title) provided by the parent (in this case the App widget) and
-  // used by the build method of the State. Fields in a Widget subclass are
-  // always marked "final".
 
   final String title;
 
@@ -31,20 +28,39 @@ class MyHomePage extends StatefulWidget {
   _MyHomePageState createState() => _MyHomePageState();
 }
 
-enum MyChoice { AddTodo, AddWeight }
-
 class _MyHomePageState extends State<MyHomePage> {
   int _selectedIndex = 0;
+
   static const TextStyle optionStyle =
       TextStyle(fontSize: 30, fontWeight: FontWeight.bold);
-  bool createPost = false;
   static List<Widget> _widgetOptions = <Widget>[
     MyHomeWidget(),
     StorePage(title: "Store"),
     MyPetPage(title: "My Pet"),
     NearbyPage(title: "Nearby"),
-    ProfilePage(title: "My Profile"),
+    StreamProvider<User>.value(
+        value: AuthService().user,
+        child: ProfileWrapper()
+    )
   ];
+
+  Widget getAppBar(BuildContext context) {
+    final textTheme = Theme.of(context).textTheme;
+    final colorScheme = Theme.of(context).colorScheme;
+    return AppBar(
+      leading: Icon(Icons.menu),
+      title: Center(child: Text("Petopia")),
+      actions: [
+        Icon(Icons.favorite),
+        Padding(
+          padding: EdgeInsets.symmetric(horizontal: 16),
+          child: Icon(Icons.search),
+        ),
+        Icon(Icons.more_vert),
+      ],
+      backgroundColor: colorScheme.primary,
+    );
+  }
 
 
   @override
@@ -52,68 +68,53 @@ class _MyHomePageState extends State<MyHomePage> {
     final textTheme = Theme.of(context).textTheme;
     final colorScheme = Theme.of(context).colorScheme;
     return Scaffold(
-      appBar: AppBar(
-        leading: Icon(Icons.menu),
-        title: Center(child: Text("Petopia")),
-        actions: [
-          Icon(Icons.favorite),
-          Padding(
-            padding: EdgeInsets.symmetric(horizontal: 16),
-            child: Icon(Icons.search),
-          ),
-          Icon(Icons.more_vert),
-        ],
-        backgroundColor: colorScheme.primary,
-      ),
-      body: Center(child: _widgetOptions.elementAt(_selectedIndex)),
-      bottomNavigationBar: BottomNavigationBar(
-        type: BottomNavigationBarType.fixed,
-        backgroundColor: colorScheme.primary,
-        currentIndex: _selectedIndex,
-        selectedItemColor: colorScheme.onSurface,
-        unselectedItemColor: colorScheme.onSurface.withOpacity(.60),
-        selectedLabelStyle: textTheme.caption,
-        unselectedLabelStyle: textTheme.caption,
-        onTap: (value) {
-          setState(() => _selectedIndex = value);
-        },
-        items: [
-          BottomNavigationBarItem(
-            title: Text('Home'),
-            icon: Icon(Icons.home),
-          ),
-          BottomNavigationBarItem(
-            title: Text('Store'),
-            icon: Icon(Icons.store),
-          ),
-          BottomNavigationBarItem(
-            title: Text('My Pet'),
-            icon: Icon(Icons.pets),
-          ),
-          BottomNavigationBarItem(
-            title: Text('Nearby'),
-            icon: Icon(Icons.location_on_rounded),
-          ),
-          BottomNavigationBarItem(
-            title: Text('Profile'),
-            icon: Icon(Icons.person),
-          ),
-        ],
-      ),
-    );
+        appBar: getAppBar(context),
+        body: Center(child: _widgetOptions.elementAt(_selectedIndex)),
+        bottomNavigationBar: BottomNavigationBar(
+          type: BottomNavigationBarType.fixed,
+          backgroundColor: colorScheme.primary,
+          currentIndex: _selectedIndex,
+          selectedItemColor: colorScheme.onSurface,
+          unselectedItemColor: colorScheme.onSurface.withOpacity(.60),
+          selectedLabelStyle: textTheme.caption,
+          unselectedLabelStyle: textTheme.caption,
+          onTap: (value) {
+            setState(() => _selectedIndex = value);
+          },
+          items: [
+            BottomNavigationBarItem(
+              title: Text('Home'),
+              icon: Icon(Icons.home),
+            ),
+            BottomNavigationBarItem(
+              title: Text('Store'),
+              icon: Icon(Icons.store),
+            ),
+            BottomNavigationBarItem(
+              title: Text('My Pet'),
+              icon: Icon(Icons.pets),
+            ),
+            BottomNavigationBarItem(
+              title: Text('Nearby'),
+              icon: Icon(Icons.location_on_rounded),
+            ),
+            BottomNavigationBarItem(
+              title: Text('Profile'),
+              icon: Icon(Icons.person),
+            ),
+          ],
+        ));
   }
 }
 
 class MyHomeWidget extends StatefulWidget {
-
   @override
   State<StatefulWidget> createState() {
     return _MyHomeWidgetState();
   }
 }
 
-
-class _MyHomeWidgetState extends State<MyHomeWidget> {
+class _MyHomeWidgetState extends State<MyHomeWidget> with AutomaticKeepAliveClientMixin<MyHomeWidget>{
   Container loadingPlaceHolder = Container(
     height: 500.0,
     child: Center(child: CircularProgressIndicator()),
@@ -122,6 +123,14 @@ class _MyHomeWidgetState extends State<MyHomeWidget> {
   Map likes = new HashMap();
   bool liked = false;
   File file;
+  Future<QuerySnapshot> posts;
+
+  @override
+  void initState() {
+    loadPosts();
+  }
+
+
   GetPostHeader({String ownerId}) {
     if (ownerId == null) {
       return Text("owner error");
@@ -142,6 +151,7 @@ class _MyHomeWidgetState extends State<MyHomeWidget> {
       trailing: const Icon(Icons.more_vert),
     );
   }
+
   bool showHeart = false;
   GestureDetector GetImage(String img) {
     return GestureDetector(
@@ -158,16 +168,17 @@ class _MyHomeWidgetState extends State<MyHomeWidget> {
           ),
           showHeart
               ? Positioned(
-            child: Container(
-              // width: 100,
-              // height: 100,
-              child:  Opacity(
-                  opacity: 0.85,
-                  child: FlareActor("assets/flare/Like.flr",
-                    animation: "Like",
-                  )),
-            ),
-          )
+                  child: Container(
+                    // width: 100,
+                    // height: 100,
+                    child: Opacity(
+                        opacity: 0.85,
+                        child: FlareActor(
+                          "assets/flare/Like.flr",
+                          animation: "Like",
+                        )),
+                  ),
+                )
               : Container()
         ],
       ),
@@ -198,19 +209,25 @@ class _MyHomeWidgetState extends State<MyHomeWidget> {
         });
   }
 
-  Widget postLists(String img) {
+  String GetTime(DateTime t) {
+    if (t != null) {
+      return t.year.toString() + "-" + t.month.toString() + "-" + t.day.toString();
+    }
+    return "";
+  }
+  Widget postLists(Post post) {
     return Container(
         color: Colors.white,
-        child:Column(
+        child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           mainAxisSize: MainAxisSize.min,
           children: <Widget>[
-            GetImage(img),
+            GetImage(post.mediaUrl),
             Row(
               mainAxisAlignment: MainAxisAlignment.start,
               children: <Widget>[
                 Padding(padding: const EdgeInsets.only(left: 20.0)),
-                Text("Post Title"),
+                Text(post.description),
                 // Padding(padding: const EdgeInsets.only(right: 20.0)),
                 // GestureDetector(
                 //   child: const Icon(
@@ -232,7 +249,18 @@ class _MyHomeWidgetState extends State<MyHomeWidget> {
                 Container(
                   margin: const EdgeInsets.only(left: 20.0),
                   child: Text(
-                    "username",
+                    post.username,
+
+                  ),
+                )
+              ],
+            ),
+            Row(
+              children: <Widget>[
+                Container(
+                  margin: const EdgeInsets.only(left: 20.0),
+                  child: Text(
+                    GetTime(post.timestamp)
                   ),
                 )
               ],
@@ -240,71 +268,91 @@ class _MyHomeWidgetState extends State<MyHomeWidget> {
             Row(
               mainAxisAlignment: MainAxisAlignment.start,
               children: <Widget>[
-                  Padding(padding: const EdgeInsets.only(left: 150.0, top:40)),
-                  GetLikeIcon(),
+                Padding(padding: const EdgeInsets.only(left: 150.0, top: 10)),
+                GetLikeIcon(),
               ],
             )
           ],
-        )
-    );
+        ));
   }
 
-  List<String> imageList = [
-    'https://cdn.pixabay.com/photo/2020/12/15/16/25/clock-5834193__340.jpg',
-    'https://cdn.pixabay.com/photo/2020/09/18/19/31/laptop-5582775_960_720.jpg',
-    'https://media.istockphoto.com/photos/woman-kayaking-in-fjord-in-norway-picture-id1059380230?b=1&k=6&m=1059380230&s=170667a&w=0&h=kA_A_XrhZJjw2bo5jIJ7089-VktFK0h0I4OWDqaac0c=',
-    'https://cdn.pixabay.com/photo/2019/11/05/00/53/cellular-4602489_960_720.jpg',
-    'https://cdn.pixabay.com/photo/2017/02/12/10/29/christmas-2059698_960_720.jpg',
-    'https://cdn.pixabay.com/photo/2020/01/29/17/09/snowboard-4803050_960_720.jpg',
-    'https://cdn.pixabay.com/photo/2020/02/06/20/01/university-library-4825366_960_720.jpg',
-    'https://cdn.pixabay.com/photo/2020/11/22/17/28/cat-5767334_960_720.jpg',
-    'https://cdn.pixabay.com/photo/2020/12/13/16/22/snow-5828736_960_720.jpg',
-    'https://cdn.pixabay.com/photo/2020/12/09/09/27/women-5816861_960_720.jpg',
-  ];
+  StaggeredGridView BuildPostResults(List<DocumentSnapshot> docs) {
+    List<Post> postModels = [];
+
+    docs.forEach((DocumentSnapshot doc) {
+      Post post = Post.fromSnapshot(doc);
+      postModels.add(post);
+    });
+
+    return getImageGrid(postModels);
+  }
+
+  Widget getImageGrid(postModels) {
+    return StaggeredGridView.countBuilder(
+        crossAxisCount: 2,
+        crossAxisSpacing: 20,
+        mainAxisSpacing: 15,
+        itemCount: postModels.length,
+        itemBuilder: (context, index) {
+          return postLists(postModels[index]);
+        },
+        staggeredTileBuilder: (index) {
+          return StaggeredTile.count(1, 1.2);
+        });
+  }
+
+  void loadPosts() async {
+    Future<QuerySnapshot> ps = postCollection.orderBy("timestamp", descending: true).getDocuments();
+
+    setState(() {
+      posts = ps;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     final textTheme = Theme.of(context).textTheme;
     final colorScheme = Theme.of(context).colorScheme;
     if (file != null) {
       return CreatePostPage(file: file);
-    } else
-    return SafeArea(
-      child: Scaffold(
-        backgroundColor: colorScheme.secondary,
-        body: Container(
-          margin: EdgeInsets.all(10),
-          child:  StaggeredGridView.countBuilder(
-              crossAxisCount: 2,
-              crossAxisSpacing: 20,
-              mainAxisSpacing: 15,
-              itemCount: imageList.length,
-              itemBuilder: (context, index) {
-                return postLists(imageList[index]);
-              },
-              staggeredTileBuilder: (index) {
-                return StaggeredTile.count(1, 1.2);
-              }),
+    } else {
+      return SafeArea(
+        child: Scaffold(
+          backgroundColor: colorScheme.secondary,
+          body: Container(
+            margin: EdgeInsets.all(10),
+            child: FutureBuilder<QuerySnapshot>(
+                future: posts,
+                builder: (context, snapshot) {
+                  if (snapshot.hasData) {
+                    return BuildPostResults(snapshot.data.documents);
+                  } else {
+                    return Container(
+                        alignment: FractionalOffset.center,
+                        child: CircularProgressIndicator());
+                  }
+                }),
+          ),
+          floatingActionButton: FloatingActionButton(
+            backgroundColor: colorScheme.primary,
+            foregroundColor: Colors.black,
+            onPressed: () {
+              setState(() {
+                _selectImage(context);
+              });
+            },
+            child: Icon(Icons.add),
+          ),
         ),
-        floatingActionButton: FloatingActionButton(
-          backgroundColor: colorScheme.primary,
-          foregroundColor: Colors.black,
-          onPressed: () {
-            setState(() {
-              _selectImage(context);
-            });
-          },
-          child: Icon(Icons.add),
-        ),
-      ),
-    );
-  }
+      );
+  }}
 
 
   _selectImage(BuildContext parentContext) async {
     return showDialog<Null>(
       context: parentContext,
       barrierDismissible: false, // user must tap button!
-
       builder: (BuildContext context) {
         return SimpleDialog(
           title: const Text('Create a Post'),
@@ -318,9 +366,11 @@ class _MyHomeWidgetState extends State<MyHomeWidget> {
                       maxWidth: 1920,
                       maxHeight: 1200);
                   // await imagePicker.getImage(source: ImageSource.camera, maxWidth: 1920, maxHeight: 1200, imageQuality: 80);
-                  setState(() {
-                    file = imageFile.absolute;
-                  });
+                  if (imageFile != null) {
+                    setState(() {
+                      file = imageFile.absolute;
+                    });
+                  }
                 }),
             SimpleDialogOption(
                 child: const Text('Choose from Gallery'),
@@ -330,11 +380,12 @@ class _MyHomeWidgetState extends State<MyHomeWidget> {
                       source: ImageSource.gallery,
                       maxWidth: 1920,
                       maxHeight: 1200);
-                  // var imageFile =
-                  // await imagePicker.getImage(source: ImageSource.gallery, maxWidth: 1920, maxHeight: 1200, imageQuality: 80);
-                  setState(() {
-                    file = imageFile.absolute;
-                  });
+                  if (imageFile != null) {
+                    setState(() {
+                      file = imageFile.absolute;
+                    });
+                  }
+
                 }),
             SimpleDialogOption(
               child: const Text("Cancel"),
@@ -347,4 +398,7 @@ class _MyHomeWidgetState extends State<MyHomeWidget> {
       },
     );
   }
+
+  @override
+  bool get wantKeepAlive => true;
 }

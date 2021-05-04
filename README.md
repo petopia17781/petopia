@@ -38,6 +38,12 @@ MacOSX:
 
 Open "System Preferences" Click on "Network" Select the network which your computer is connected click on "Advanced" Select "DNS", Select the "+" button, type "8.8.8.8" (Google's DNS) or if you prefer OpenDNS, "208.67.222.222" Select "Ok" and "Apply".
 
+5. Please put Google Maps API key(APIKey.plist) in the following path:
+
+```
+ios/Runner.xcodeproj/APIKey.plist
+```
+
 ### Working Status
 
 Yihua Cai: Currently working on the Home page.
@@ -45,6 +51,8 @@ Yihua Cai: Currently working on the Home page.
 Jiaqi Liu: Completed [data model design](https://docs.google.com/presentation/d/1Tv2inE65sjLrQshEj7lx6RkJ1eSqf2vJMqGLYyahADI/edit?usp=sharing), now working on writing data model and My Pet page.
 
 Yuting Liu: Working on Nearby page.
+
+Sijie Lin: Working on Store page & Profile page.
 
 ## Getting Started with Flutter
 

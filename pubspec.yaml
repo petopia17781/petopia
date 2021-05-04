@@ -50,6 +50,8 @@ dependencies:
 
   # Add the dependency for Google Maps
   google_maps_flutter: ^2.0.3
+  #  geocoder:
+  geolocator: ^6.2.0
 
 dev_dependencies:
   flutter_test:

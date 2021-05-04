@@ -58,9 +58,7 @@ class _SignUpFormState extends State<SignUpForm> {
                 if (user == null) {
                   addError(error: "Email address existed!");
                 } else {
-                  print("signed up");
-                  print(user);
-                  print(user.userId);
+                  print("signed up: " + user.uid);
                 }
               }
             },

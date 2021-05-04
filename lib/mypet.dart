@@ -1,7 +1,5 @@
-// import 'package:charts_flutter/flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:petopia/repository/PetRepository.dart';
-import 'package:petopia/home.dart';
 
 import 'models/Pet.dart';
 

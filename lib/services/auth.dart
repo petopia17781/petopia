@@ -1,6 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:petopia/models/User.dart';
-import 'package:petopia/services/database.dart';
+import 'package:petopia/repository/UserRepository.dart';
 
 class AuthService {
 
@@ -12,9 +12,9 @@ class AuthService {
       return null;
     }
     if (user.isAnonymous) {
-      return User(user.uid, "Anonymous");
+      return User(uid: user.uid);
     }
-    return User(user.uid, "demo username");
+    return User(uid: user.uid);
   }
 
   // auth change user stream
@@ -59,10 +59,13 @@ class AuthService {
       );
       FirebaseUser user = result.user;
       // create a new document for the user with the uid
-      await DatabaseService(userId: user.uid).updateUserProfile(
-          'Meow Petopia',
-          'Nothing here meow',
-          'https://images-na.ssl-images-amazon.com/images/I/31Rgh5fBqDL.jpg'
+      await UserDataRepository(uid: user.uid).addUserData(
+        UserData(
+          uid: user.uid,
+          username: 'Meow Petopia',
+          description: 'Nothing here meow',
+          avatarUrl: 'https://images-na.ssl-images-amazon.com/images/I/31Rgh5fBqDL.jpg',
+        )
       );
       return _userFromFirebaseUser(user);
     } catch (e) {

@@ -1,7 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:petopia/models/User.dart';
-import 'package:petopia/services/auth.dart';
-import 'package:provider/provider.dart';
 import 'package:petopia/home/home.dart';
 import 'package:petopia/store.dart';
 import 'package:petopia/mypet.dart';
@@ -20,11 +17,7 @@ class _BottomNavigationState extends State<BottomNavigation> {
     StorePage(title: "Store"),
     MyPetPage(title: "My Pet"),
     NearbyPage(title: "Nearby"),
-    StreamProvider<User>.value(
-        value: AuthService().user,
-        initialData: null,
-        child: ProfileWrapper()
-    )
+    ProfileWrapper()
   ];
 
   @override

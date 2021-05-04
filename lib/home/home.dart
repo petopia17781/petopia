@@ -6,7 +6,9 @@ import 'package:flutter/material.dart';
 import 'package:petopia/SizeConfig.dart';
 import 'package:petopia/home/postCard.dart';
 import 'package:petopia/models/Post.dart';
+import 'package:petopia/models/User.dart';
 import 'package:petopia/repository/PostRepository.dart';
+import 'package:provider/provider.dart';
 
 class HomePage extends StatefulWidget {
   @override
@@ -37,6 +39,7 @@ class _HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin<
     super.build(context);
     final textTheme = Theme.of(context).textTheme;
     final colorScheme = Theme.of(context).colorScheme;
+    final user = Provider.of<User>(context);
     if (file != null) {
       return CreatePostPage(file: file);
     } else {
@@ -73,9 +76,11 @@ class _HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin<
           backgroundColor: colorScheme.primary,
           foregroundColor: Colors.black,
           onPressed: () {
-            setState(() {
-              _selectImage(context);
-            });
+            if (user != null) {
+              setState(() {
+                _selectImage(context);
+              });
+            }
           },
           child: Icon(Icons.add),
         ),

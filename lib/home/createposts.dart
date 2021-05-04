@@ -7,7 +7,9 @@ import 'package:image_picker_modern/image_picker_modern.dart';
 import 'package:petopia/home/home.dart';
 import 'package:petopia/home/location.dart';
 import 'package:petopia/models/Post.dart';
+import 'package:petopia/models/User.dart';
 import 'package:petopia/repository/PostRepository.dart';
+import 'package:provider/provider.dart';
 import 'package:uuid/uuid.dart';
 
 class CreatePostPage extends StatefulWidget {
@@ -55,6 +57,7 @@ class _CreatePostPageState extends State<CreatePostPage> {
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
     final colorScheme = Theme.of(context).colorScheme;
+    final user = Provider.of<User>(context);
     return file == null
         ? HomePage()
         : Scaffold(
@@ -70,7 +73,9 @@ class _CreatePostPageState extends State<CreatePostPage> {
               ),
               actions: <Widget>[
                 FlatButton(
-                    onPressed: postImage,
+                    onPressed: () {
+                      postImage(user.uid);
+                    },
                     child: Text(
                       "Post",
                       style: TextStyle(
@@ -147,13 +152,14 @@ class _CreatePostPageState extends State<CreatePostPage> {
     });
   }
 
-  void postImage() {
+  void postImage(String userId) {
     setState(() {
       uploading = true;
     });
 
     uploadImage(file).then((String data) {
       postToFireStore(
+          userId: userId,
           mediaUrl: data,
           description: descriptionController.text,
           location: locationController.text);
@@ -259,23 +265,23 @@ Future<String> uploadImage(var imageFile) async {
   return downloadUrl;
 }
 
-void postToFireStore(
-    {String mediaUrl, String location, String description}) async {
+void postToFireStore({
+  String userId,
+  String username,
+  String mediaUrl,
+  String location,
+  String description
+}) async {
   print(mediaUrl.toString());
   PostRepository postRepository = PostRepository();
   postRepository.addPost(new Post(
-      username: "yihuatest",
+      username: username,
       mediaUrl: mediaUrl,
       description: description,
-      userId: "user1",
+      uid: userId,
       timestamp: DateTime.now(),
       location: location,
-  ))
-  //     .then((DocumentReference doc) {
-  //   String docId = doc.documentID;
-  //   postRepository.collection.document(docId).updateData({"postId": docId});
-  // })
-  ;
+  ));
 }
 
 const Color shrinePink400 = Color(0xFFEAA4A4);

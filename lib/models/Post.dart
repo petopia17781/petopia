@@ -4,8 +4,8 @@ import 'package:flutter/cupertino.dart';
 class Post {
   final String description;
   final String mediaUrl;
-  final String userId;
-  final String username;
+  final String uid;
+  String username;
   final DateTime timestamp;
   String location;
   List<String> likedBy;
@@ -14,7 +14,7 @@ class Post {
   Post({
     @required this.description,
     @required this.mediaUrl,
-    @required this.userId,
+    @required this.uid,
     this.username,
     @required this.timestamp,
     this.location,
@@ -34,22 +34,20 @@ class Post {
   String toString() => "Post<$reference>";
 }
 
-// 1
 Post _postFromJson(Map<String, dynamic> json)  {
   return Post(
       description: json['description'] as String,
-      userId: json['userId'] as String,
+      uid: json['uid'] as String,
       mediaUrl: json['mediaUrl'] as String,
-      username: json['username'] as String,
       location: json['location'] as String,
       timestamp: (json['timestamp'] as Timestamp).toDate(),
   );
 }
+
 Map<String, dynamic> _postToJson(Post instance) => <String, dynamic> {
   'description': instance.description,
   'mediaUrl': instance.mediaUrl,
-  'userId': instance.userId,
-  'username': instance.username,
+  'uid': instance.uid,
   'timestamp': instance.timestamp,
   'location' : instance.location,
 };

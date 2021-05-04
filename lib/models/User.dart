@@ -1,49 +1,67 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:petopia/models/Post.dart';
 import 'package:petopia/models/Pet.dart';
 
 class User {
-  final String userId;
-  String name;
-  String notes;
+  final String uid;
 
-  List<Pet> pets;
-  List<Post> posts;
+  User({ this.uid });
+}
+
+class UserData {
+  final String uid;
+  final String username;
+  final String description;
+  final String avatarUrl;
+
+   List<Pet> pets;
+   List<Post> posts;
 
   DocumentReference reference;
 
-  User(this.userId, this.name, {this.notes, this.pets, this.posts, this.reference});
+  UserData({
+    @required this.uid,
+    @required this.username,
+    @required this.description,
+    @required this.avatarUrl,
+    this.pets,
+    this.posts
+  });
 
-  factory User.fromSnapshot(DocumentSnapshot snapshot) {
-    User newUser = User.fromJson(snapshot.data);
-    newUser.reference = snapshot.reference;
-    return newUser;
+  factory UserData.fromSnapshot(DocumentSnapshot snapshot) {
+    UserData userData = UserData.fromJson(snapshot.data);
+    userData.reference = snapshot.reference;
+    return userData;
   }
 
-  factory User.fromJson(Map<String, dynamic> json) => _UserFromJson(json);
+  factory UserData.fromJson(Map<String, dynamic> json) => _userDataFromJson(json);
 
-  Map<String, dynamic> toJson() => _UserToJson(this);
+  Map<String, dynamic> toJson() => _userDataToJson(this);
+
   @override
-  String toString() => "User<$name>";
+  String toString() => "UserData<$uid,$username>";
 }
 
 /// from/to Json
-User _UserFromJson(Map<String, dynamic> json) {
-  return User(
-      json['userId'] as String,
-      json['name'] as String,
-      notes: json['notes'] as String,
+UserData _userDataFromJson(Map<String, dynamic> json) {
+  return UserData(
+      uid: json['uid'] as String,
+      username: json['username'] as String,
+      description: json['description'] as String,
+      avatarUrl: json['avatarUrl'] as String,
       pets: _convertPets(json['pets'] as List),
       posts: _convertPosts(json['posts'] as List)
   );
 }
 
-Map<String, dynamic> _UserToJson(User instance) => <String, dynamic> {
-  'userId': instance.userId,
-  'name': instance.name,
-  'notes': instance.notes,
-  'pets': _PetList(instance.pets),
-  'posts': _PostList(instance.posts),
+Map<String, dynamic> _userDataToJson(UserData instance) => <String, dynamic> {
+  'uid': instance.uid,
+  'username': instance.username,
+  'description': instance.description,
+  'avatarUrl': instance.avatarUrl,
+  'pets': _petList(instance.pets),
+  'posts': _postList(instance.posts),
 };
 
 /// handle pet list and post list
@@ -69,7 +87,7 @@ List<Post> _convertPosts(List postMap) {
   return posts;
 }
 
-List<Map<String, dynamic>> _PetList(List<Pet> pets) {
+List<Map<String, dynamic>> _petList(List<Pet> pets) {
   if (pets == null) {
     return null;
   }
@@ -80,7 +98,7 @@ List<Map<String, dynamic>> _PetList(List<Pet> pets) {
   return petMap;
 }
 
-List<Map<String, dynamic>> _PostList(List<Post> posts) {
+List<Map<String, dynamic>> _postList(List<Post> posts) {
   if (posts == null) {
     return null;
   }

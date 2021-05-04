@@ -2,64 +2,16 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:intl/intl.dart';
 import 'package:petopia/SizeConfig.dart';
-import 'package:petopia/services/auth.dart';
 
-class ProfilePage extends StatefulWidget {
-  ProfilePage({Key key, this.title}) : super(key: key);
-
-  // This widget is the home page of your application. It is stateful, meaning
-  // that it has a State object (defined below) that contains fields that affect
-  // how it looks.
-
-  // This class is the configuration for the state. It holds the values (in this
-  // case the title) provided by the parent (in this case the App widget) and
-  // used by the build method of the State. Fields in a Widget subclass are
-  // always marked "final".
-
-  final String title;
-
-  @override
-  _ProfilePageState createState() => _ProfilePageState();
-}
-
-class _ProfilePageState extends State<ProfilePage> {
-  @override
-  Widget build(BuildContext context) {
-    // This method is rerun every time setState is called, for instance as done
-    // by the _incrementCounter method above.
-    //
-    // The Flutter framework has been optimized to make rerunning build methods
-    // fast, so that you can just rebuild anything that needs updating rather
-    // than having to individually change instances of widgets.
-    return Scaffold(
-      body: Stack(
-        children: <Widget>[
-          // header
-          Header(
-            username: "Andrew Carnegie",
-            avatar:
-                "https://www.carnegiecouncil.org/people/andrew-carnegie/_res/id=Picture/thumbnail=1/width=170/quality=100",
-            twitter: "carnegie",
-            follower: 15300,
-            followee: 314,
-          ),
-          // tab
-          Tabs()
-        ],
-      ),
-    );
-  }
-}
-
-class Header extends StatelessWidget {
-  const Header(
+class ProfileHeader extends StatelessWidget {
+  const ProfileHeader(
       {Key key,
-      @required this.username,
-      this.avatar,
-      this.facebook,
-      this.twitter,
-      @required this.follower,
-      @required this.followee})
+        @required this.username,
+        this.avatar,
+        this.facebook,
+        this.twitter,
+        @required this.follower,
+        @required this.followee})
       : super(key: key);
 
   final String username, avatar;
@@ -68,8 +20,6 @@ class Header extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-
-    final AuthService _auth = AuthService();
 
     return Container(
       color: shrinePink400,
@@ -201,13 +151,11 @@ class Header extends StatelessWidget {
                     borderRadius: BorderRadius.circular(5.0),
                   ),
                   child: GestureDetector(
-                    onTap: () async {
-                      await _auth.signOut();
-                    },
+                    onTap: () {},
                     child: Padding(
                       padding: const EdgeInsets.all(8.0),
                       child: Text(
-                        "SIGN OUT",
+                        "EDIT PROFILE",
                         style: TextStyle(
                             color: Colors.black26,
                             fontSize: 1.8 * SizeConfig.textMultiplier),
@@ -219,41 +167,6 @@ class Header extends StatelessWidget {
               ],
             )
           ],
-        ),
-      ),
-    );
-  }
-}
-
-class Tabs extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
-    return Padding(
-      padding: EdgeInsets.only(top: 30 * SizeConfig.heightMultiplier),
-      child: DefaultTabController(
-        length: 3,
-        child: Scaffold(
-          appBar: AppBar(
-            backgroundColor: shrinePink400,
-            flexibleSpace: SafeArea(
-              child: TabBar(
-                indicatorColor: colorScheme.onSurface,
-                tabs: [
-                  Tab(text: 'POSTS'),
-                  Tab(text: 'FAVORITES'),
-                  Tab(text: 'LIKED'),
-                ],
-              ),
-            ),
-          ),
-          body: TabBarView(
-            children: [
-              Center(child: Text('POSTS')),
-              Center(child: Text('FAVORITES')),
-              Center(child: Text('LIKED')),
-            ],
-          ),
         ),
       ),
     );

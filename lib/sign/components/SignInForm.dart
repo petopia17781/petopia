@@ -79,9 +79,7 @@ class _SignFormState extends State<SignForm> {
                 if (user == null) {
                   addError(error: "Wrong email or password!");
                 } else {
-                  print("signed in");
-                  print(user);
-                  print(user.userId);
+                  print("signed in: " + user.uid);
                 }
               }
             },

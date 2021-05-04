@@ -1,15 +1,12 @@
-import 'dart:collection';
 import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:image_picker_modern/image_picker_modern.dart';
-import 'package:petopia/createposts.dart';
+import 'package:petopia/home/createposts.dart';
 import 'package:flutter/material.dart';
 import 'package:petopia/SizeConfig.dart';
-
-import 'models/Post.dart';
-
+import 'package:petopia/models/Post.dart';
 
 final postCollection = Firestore.instance.collection("posts");
 
@@ -206,12 +203,11 @@ class PostCard extends StatelessWidget {
                     Hero(
                       tag: post.postId,
                       child: AspectRatio(
-                          aspectRatio: 1.3,
+                          aspectRatio: 1.35,
                           child: Image.network(post.mediaUrl)
                       ),
                     ),
                     Container(
-
                       padding: EdgeInsets.symmetric(horizontal: 3 * SizeConfig.widthMultiplier),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -227,7 +223,7 @@ class PostCard extends StatelessWidget {
                               Text(
                                 post.username,
                                 style: TextStyle(
-                                  fontSize: 1.5 * SizeConfig.textMultiplier,
+                                  fontSize: 1.35 * SizeConfig.textMultiplier,
                                   fontWeight: FontWeight.w600,
                                   color: colorScheme.primary,
                                 ),
@@ -258,13 +254,9 @@ class PostCard extends StatelessWidget {
                         ],
                       ),
                     ),
-
                   ],
                 ),
               ),
-              const SizedBox(height: 10),
-
-
             ],
           ),
         ),

@@ -5,12 +5,11 @@ import 'package:flutter/material.dart';
 import 'package:geocoder/model.dart';
 import 'dart:io';
 import 'package:image_picker_modern/image_picker_modern.dart';
-import 'package:petopia/home.dart';
+import 'package:petopia/home/home.dart';
+import 'package:petopia/home/location.dart';
 import 'package:petopia/models/Post.dart';
 import 'package:petopia/repository/PostRepository.dart';
 import 'package:uuid/uuid.dart';
-
-import 'location.dart';
 
 class CreatePostPage extends StatefulWidget {
   CreatePostPage({Key key, this.title, this.file}) : super(key: key);

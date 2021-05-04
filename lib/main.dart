@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:petopia/SizeConfig.dart';
 import 'package:petopia/bottomNavigationWrapper.dart';
+import 'package:petopia/models/User.dart';
+import 'package:petopia/services/auth.dart';
+import 'package:provider/provider.dart';
 
 void main() {
   runApp(MyApp());
@@ -15,11 +18,16 @@ class MyApp extends StatelessWidget {
         return OrientationBuilder(
           builder: (context, orientation) {
             SizeConfig().init(constraints, orientation);
-            return MaterialApp(
-              title: 'Petopia',
-              theme: _buildShrineTheme(),
-              home: BottomNavigation(),
-            );
+            return
+              StreamProvider<User>.value(
+                  value: AuthService().user,
+                  initialData: null,
+                  child: MaterialApp(
+                    title: 'Petopia',
+                    theme: _buildShrineTheme(),
+                    home: BottomNavigation(),
+                  )
+              );
           },
         );
       },

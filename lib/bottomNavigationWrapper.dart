@@ -2,11 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:petopia/models/User.dart';
 import 'package:petopia/services/auth.dart';
 import 'package:provider/provider.dart';
-import 'package:petopia/home.dart';
+import 'package:petopia/home/home.dart';
 import 'package:petopia/store.dart';
 import 'package:petopia/mypet.dart';
 import 'package:petopia/nearby.dart';
-import 'package:petopia/profileWrapper.dart';
+import 'package:petopia/profile/profileWrapper.dart';
 
 class BottomNavigation extends StatefulWidget {
   @override
@@ -22,6 +22,7 @@ class _BottomNavigationState extends State<BottomNavigation> {
     NearbyPage(title: "Nearby"),
     StreamProvider<User>.value(
         value: AuthService().user,
+        initialData: null,
         child: ProfileWrapper()
     )
   ];

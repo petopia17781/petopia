@@ -54,7 +54,10 @@ class _ProfilePageState extends State<ProfilePage> {
               ],
             );
           } else {
-            return Container();
+            return Container(
+                alignment: FractionalOffset.center,
+                child: CircularProgressIndicator()
+            );
           }
         },
       ),

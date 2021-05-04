@@ -1,4 +1,3 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -265,17 +264,18 @@ void postToFireStore(
   print(mediaUrl.toString());
   PostRepository postRepository = PostRepository();
   postRepository.addPost(new Post(
-      "post1",
       username: "yihuatest",
       mediaUrl: mediaUrl,
       description: description,
       userId: "user1",
       timestamp: DateTime.now(),
       location: location,
-  )).then((DocumentReference doc) {
-    String docId = doc.documentID;
-    postRepository.collection.document(docId).updateData({"postId": docId});
-  });
+  ))
+  //     .then((DocumentReference doc) {
+  //   String docId = doc.documentID;
+  //   postRepository.collection.document(docId).updateData({"postId": docId});
+  // })
+  ;
 }
 
 const Color shrinePink400 = Color(0xFFEAA4A4);

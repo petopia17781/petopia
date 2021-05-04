@@ -17,8 +17,8 @@ class _MyPetPageState extends State<MyPetPage> {
   final PetRepository repository = PetRepository();
   // network pics
   List<String> picLinks = [
-    'https://www.ctvnews.ca/polopoly_fs/1.5098407.1599687805!/httpImage/image.jpg_gen/derivatives/landscape_1020/image.jpg',
-    'https://images.theconversation.com/files/350865/original/file-20200803-24-50u91u.jpg?ixlib=rb-1.1.0&q=45&auto=format&w=1200&h=675.0&fit=crop'
+    'https://firebasestorage.googleapis.com/v0/b/flutter-test-56215.appspot.com/o/Calories.png?alt=media&token=74247fd8-b91c-4655-ac74-7df6371b2787',
+    'https://firebasestorage.googleapis.com/v0/b/flutter-test-56215.appspot.com/o/Calories.png?alt=media&token=74247fd8-b91c-4655-ac74-7df6371b2787'
   ];
   // for reminder
   List<bool> reminderVal = [true, false, true];
@@ -258,12 +258,12 @@ class _MyPetPageState extends State<MyPetPage> {
           ListTile(
             title: Text('Deworming'),
             leading: Icon(Icons.pan_tool),
-            trailing: Text('No'),
+            trailing: Text('05/24/2021'),
           ),
           ListTile(
             title: Text('Vaccination'),
             leading: Icon(Icons.verified_user),
-            trailing: Text('No'),
+            trailing: Text('11/18/2021'),
           ),
           ButtonBar(
             alignment: MainAxisAlignment.start,

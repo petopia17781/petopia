@@ -149,6 +149,22 @@ class _MyPetPageState extends State<MyPetPage> {
                   labelText: 'Calories',
                 ),
               ),
+              TextFormField(
+                initialValue: 'No',
+                maxLength: 3,
+                decoration: InputDecoration(
+                  icon: Icon(Icons.favorite),
+                  labelText: 'Deworming',
+                ),
+              ),
+              TextFormField(
+                initialValue: 'No',
+                maxLength: 3,
+                decoration: InputDecoration(
+                  icon: Icon(Icons.favorite),
+                  labelText: 'Vaccination',
+                ),
+              ),
             ],
           ),
           actions: [
@@ -258,12 +274,12 @@ class _MyPetPageState extends State<MyPetPage> {
           ListTile(
             title: Text('Deworming'),
             leading: Icon(Icons.pan_tool),
-            trailing: Text('05/24/2021'),
+            trailing: Text('No'),
           ),
           ListTile(
             title: Text('Vaccination'),
             leading: Icon(Icons.verified_user),
-            trailing: Text('11/18/2021'),
+            trailing: Text('No'),
           ),
           ButtonBar(
             alignment: MainAxisAlignment.start,
